@@ -1,38 +1,43 @@
 using UnityEngine;
 using UnityEngine.Events;
 
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
+
 public class FaderScript : MonoBehaviour
 {
-    /// <summary>フェードイン時の待機時間</summary>
-    public float WaitTime;
+    /// <summary>待機インターバル</summary>
+    [SerializeField] protected Interval wait;
 
     /// <summary>フェード速度</summary>
-    public float Speed;
+    [SerializeField] protected float speed;
 
-    /// <summary>フェードさせるカラーを実装するインターフェイス</summary>
-    protected IFade fade;
+    /// <summary>フェードイン終了時実行するコールバック</summary>
+    protected UnityAction onFadeInEnd;
 
-    /// <summary>待機中か</summary>
-    protected System.Func<bool> isWait;
-
-    /// <summary>フェードイン時実行する関数</summary>
-    protected UnityAction onFadeIn;
-    /// <summary>フェードアウト時実行する関数</summary>
-    protected UnityAction onFadeOut;
-
-    /// <summary>フェード終了時実行する関数</summary>
-    protected UnityAction onFadeEnd;
+    /// <summary>フェードアウト終了時実行するコールバック</summary>
+    protected UnityAction onFadeOutEnd;
 
     /// <summary>待機インターバル</summary>
-    protected Interval waitInterval;
+    public IInterval Wait => wait;
 
-    /// <summary>目標のアルファ値</summary>
-    protected float target;
+    /// <summary>フェードイン終了時の待機時間</summary>
+    public float WaitTime { get => wait.Time; set => wait.Time = value; }
+
+    /// <summary>フェード速度</summary>
+    public float Speed { get => speed; set => speed = value; }
 
     /// <summary>フェードイン時のアルファ値</summary>
-    protected readonly float inAlpha = Color.black.a;
+    protected virtual float InValue => MathEx.OneF;//MathEx.OneF = 1f;
     /// <summary>フェードアウト時のアルファ値</summary>
-    protected readonly float outAlpha = Color.clear.a;
+    protected virtual float OutValue => MathEx.ZeroF;//MathEx.ZeroF = 0f;
+
+    /// <summary>フェードさせる値</summary>
+    public virtual float FadeValue { get; set; }
+
+    /// <summary>目標の値</summary>
+    public float Target { get; protected set; }
 
     /// <summary>フェードアウト中か</summary>
     public bool IsFadeOut { get; protected set; }
@@ -40,64 +45,125 @@ public class FaderScript : MonoBehaviour
     /// <summary>フェード中か</summary>
     public bool IsRun { get; protected set; }
 
-    protected virtual void Awake() => waitInterval ??= new(Time: WaitTime);//インスタンスを作成
+    /// <summary>フェードを開始</summary>
+    /// <param name="onFadeInEnd">フェードイン終了時実行するコールバック</param>
+    /// <param name="onFadeOutEnd">フェードアウト終了時実行するコールバック</param>
+    public virtual void Run(UnityAction onFadeInEnd, UnityAction onFadeOutEnd)
+    {
+        if (IsRun) return;               //フェード中なら/終了
+
+        this.onFadeInEnd = onFadeInEnd;  //フェードイン終了時実行するコールバックを代入
+        this.onFadeOutEnd = onFadeOutEnd;//フェードアウト終了時実行するコールバックを代入
+
+        Target = InValue;                //目標の値を代入
+
+        IsRun = true;                    //フェード中かをtrue
+    }
 
     /// <summary>フェードを開始</summary>
-    /// <param name="f">フェードさせるColor</param>
-    /// <param name="i">フェードイン時実行</param>
-    /// <param name="o">フェードアウト時実行</param>
-    /// <param name="w">待機中か</param>
-    public virtual void Run(IFade f, UnityAction i, UnityAction o, System.Func<bool> w)
+    /// <param name="onFadeInEnd">フェードイン終了時実行するコールバック</param>
+    public virtual void Run(UnityAction onFadeInEnd) => Run(onFadeInEnd, null);
+
+    /// <summary>フェードを開始</summary>
+    public virtual void Run() => Run(null, null);
+
+    /// <summary>フェードイン終了時実行</summary>
+    protected virtual void OnFadeInEnd()
     {
-        if (IsRun) return;                 //フェード中なら/終了
+        onFadeInEnd?.Invoke();//フェードイン終了時のコールバックを呼び出す
 
-        onFadeEnd ??= () => IsRun = false; //フェード終了時の関数を実行
+        wait.ReSet();         //インターバルをリセット
+    }
 
-        waitInterval.Time = WaitTime;      //待機時間を代入
+    /// <summary>フェードアウト終了時実行</summary>
+    protected virtual void OnFadeOutEnd()
+    {
+        onFadeOutEnd?.Invoke();//コールバックを呼び出す
 
-        IsRun = true;                      //フェード中かをtrue
-
-        fade = f;                          //フェードさせるColorを代入
-
-        onFadeIn = i + waitInterval.ReSet; //(フェードイン時実行 + インターバルをリセット)関数を代入
-        onFadeOut = o + onFadeEnd;         //(フェードアウト時実行 + フェード終了時実行)関数を代入
-
-        isWait = w ??= () => !waitInterval;//待機中か/nullならインターバルを越えていないかを代入
-
-        target = inAlpha;                  //アルファ値を代入
+        IsRun = false;         //フェードを終了
     }
 
     /// <summary>フェード</summary>
     protected virtual void Fade()
     {
-        var color = fade.FadeColor;
+        var value = FadeValue;                      //フェードさせる値を代入
 
-        if (Mathf.Approximately(color.a, target))        //目標の色になったら
+        if (Mathf.Approximately(value, Target))     //目標の値とほぼ等しかったら
         {
-            target = IsFadeOut ? inAlpha : outAlpha;     //目標の色のアルファ値に
+            FadeValue = Target;                     //目標の値を代入
 
-            (IsFadeOut ? onFadeOut : onFadeIn)?.Invoke();//(フェードアウトならフェードアウト時実行/それ以外ならフェードイン時実行)する関数を実行
+            Target = IsFadeOut ? InValue : OutValue;//次の目標の値を代入
 
-            IsFadeOut = !IsFadeOut;                      //反転
+            if (IsFadeOut) OnFadeOutEnd();          //フェードアウト中なら フェードアウト終了時実行する関数を呼び出す
+            else OnFadeInEnd();                     //それ以外なら         フェードイン  終了時実行する関数を呼び出す
 
-            return;                                      //終了
+            IsFadeOut = !IsFadeOut;                 //反転
+
+            return;                                 //終了
         }
 
-        if (!isWait.Invoke())                            //待機中でなければ
+        if (wait.IsOver)                                                         //待機中でなければ
         {
-            color.a = Mathf.MoveTowards(color.a, target, Speed * Time.deltaTime);//アルファ値をフェード
-
-            fade.FadeColor = color;                                              //フェードさせた値を代入
+            FadeValue = Mathf.MoveTowards(value, Target, speed * Time.deltaTime);//フェードさせた値を代入
         }
     }
 
-    protected virtual void Update() { if (IsRun) Fade(); }//フェード中なら/フェード
-}
+    protected virtual void Update()
+    {
+        if (IsRun) Fade();//フェード中なら/フェード
+    }
 
-public interface IFade
-{
-    /// <summary>フェードさせるカラー</summary>
-    public Color FadeColor { get; set; }
+#if UNITY_EDITOR
+    [CustomEditor(typeof(FaderScript), true)]
+    public class FaderEditor : Editor
+    {
+        protected FaderScript script;
+
+        protected virtual void OnEnable() => script = (FaderScript)target;
+
+        protected virtual void Field()
+        {
+            script.wait.Time = GUIL.Field(nameof(WaitTime), script.wait.Time);
+
+            script.speed = GUIL.Field(nameof(Speed), script.speed);
+
+            GUIL.Space();
+
+            try
+            {
+                var value = script.FadeValue;
+
+                script.FadeValue = GUIL.Field(nameof(script.FadeValue), script.FadeValue, script.OutValue, script.InValue);
+
+                if (value != script.FadeValue)
+                {
+                    EditorApplication.QueuePlayerLoopUpdate();
+                }
+            }
+            catch (System.Exception e)
+            {
+                EditorGUILayout.HelpBox(e.Message, MessageType.Error);
+            }
+        }
+
+        public override void OnInspectorGUI()
+        {
+            serializedObject.Update();
+
+            Field();
+
+            EditorGUILayout.Space();
+            EditorGUILayout.Space();
+            GUIL.FlexibleLabel("------------------------------base------------------------------");
+            EditorGUILayout.Space();
+            EditorGUILayout.Space();
+
+            base.OnInspectorGUI();
+
+            serializedObject.ApplyModifiedProperties();
+        }
+    }
+#endif
 }
 
 //フェードの定義

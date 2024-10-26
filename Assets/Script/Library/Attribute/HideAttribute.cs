@@ -23,17 +23,17 @@ public class HideDrawer : PropertyDrawer
     {
         return isControlKey && p.propertyType switch
         {
-            SerializedPropertyType.String          => !string.IsNullOrEmpty(p.stringValue),
+            SerializedPropertyType.String => !string.IsNullOrEmpty(p.stringValue),
             SerializedPropertyType.ObjectReference => p.objectReferenceValue != null,
-            SerializedPropertyType.Integer         => p.intValue != default,
-            SerializedPropertyType.Float           => p.floatValue != default,
-            SerializedPropertyType.Color           => p.colorValue != default,
-            SerializedPropertyType.Vector2         => p.vector2Value != default,
-            SerializedPropertyType.Vector3         => p.vector3Value != default,
-            SerializedPropertyType.Vector4         => p.vector4Value != default,
-            SerializedPropertyType.Vector2Int      => p.vector2IntValue != default,
-            SerializedPropertyType.Vector3Int      => p.vector3IntValue != default,
-            _                                      => isControlKey,
+            SerializedPropertyType.Integer => p.intValue != default,
+            SerializedPropertyType.Float => p.floatValue != default,
+            SerializedPropertyType.Color => p.colorValue != default,
+            SerializedPropertyType.Vector2 => p.vector2Value != default,
+            SerializedPropertyType.Vector3 => p.vector3Value != default,
+            SerializedPropertyType.Vector4 => p.vector4Value != default,
+            SerializedPropertyType.Vector2Int => p.vector2IntValue != default,
+            SerializedPropertyType.Vector3Int => p.vector3IntValue != default,
+            _ => isControlKey,
         };
     }
 

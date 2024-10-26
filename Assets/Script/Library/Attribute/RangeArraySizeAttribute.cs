@@ -14,28 +14,36 @@ public class RangeArraySizeAttribute : FieldReferenceAttribute
 
 #if UNITY_EDITOR
 [CustomPropertyDrawer(typeof(RangeArraySizeAttribute))]
-public class RangeArraySizeDrawer : Range01Drawer
+public class RangeArraySizeDrawer : BaseRangeDrawer
 {
-    private float Max(SerializedProperty p)
+    private int Exception(string text)
     {
-        var att = attribute as RangeArraySizeAttribute;
+        Debug.LogError(text);
 
-        if (att == null) return default;
-
-        var array = p.serializedObject.FindProperty(att.Name);
-
-        if (array == null || array.isArray)
-        {
-            Debug.LogError($"{att.Name} is {array.propertyType}");
-
-            return default;
-        }
-
-        return p.arraySize;
+        return default;
     }
 
-    protected override int IntMax(Rect r, SerializedProperty p, GUIContent l) => Mathf.RoundToInt(Max(p));
+    private int Max(SerializedProperty p)
+    {
+        var target = attribute as RangeArraySizeAttribute;
 
-    protected override float FloatMax(Rect r, SerializedProperty p, GUIContent l) => Max(p);
+        if (target == null) return Exception($"{typeof(RangeArraySizeAttribute)}が見つかりません");
+
+        var property = p.serializedObject.FindProperty(target.Name);
+
+        if (property == null) return Exception($"プロパティ名\"{target.Name}\"は見つかりませんでした");
+
+        if (!property.isArray) return Exception($"プロパティ名\"{target.Name}\"は配列ではありません");
+
+        var size = property.arraySize;
+
+        return size == default ? default : size - 1;
+    }
+
+    protected override int MaxInt(SerializedProperty p) => Max(p);
+    protected override int MinInt(SerializedProperty p) => default;
+
+    protected override float MaxFloat(SerializedProperty p) => Max(p);
+    protected override float MinFloat(SerializedProperty p) => default;
 }
 #endif

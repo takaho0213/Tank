@@ -1,10 +1,27 @@
 #if UNITY_EDITOR
 using UnityEngine;
 using UnityEditor;
+
 [CustomPropertyDrawer(typeof(Scene))]
 public class SceneDrawer : PropertyDrawer
 {
-    private void LogError(string name) => Debug.LogError($"Scene名{name}はビルドされていません");
+    /// <summary>新たなシーンをセット</summary>
+    /// <param name="name">シーン名</param>
+    private static SceneAsset AddScene(string name)
+    {
+        if (Drawer.TryFindAsset(name, out SceneAsset scene))
+        {
+            var array = EditorBuildSettings.scenes.AddArraySize(MathEx.OneI);
+
+            array[array.LastIndex()] = new(scene.name, true);
+
+            Debug.Log($"Add => {scene.name}");
+
+            EditorBuildSettings.scenes = array;
+        }
+
+        return scene;
+    }
 
     private SceneAsset GetScene(string name)
     {
@@ -12,32 +29,24 @@ public class SceneDrawer : PropertyDrawer
 
         foreach (var scene in EditorBuildSettings.scenes)
         {
-            if (scene.path.IndexOf(name) != -1)
+            if (scene.path.IndexOf(name) >= default(int))
             {
-                return (SceneAsset)AssetDatabase.LoadAssetAtPath(scene.path, typeof(SceneAsset));
+                return AssetDatabase.LoadAssetAtPath(scene.path, typeof(SceneAsset)) as SceneAsset;
             }
         }
 
-        LogError(name);
-
-        return null;
+        return AddScene(name);
     }
 
     public override void OnGUI(Rect r, SerializedProperty p, GUIContent l)
     {
-        var scene = p.FindPropertyRelative(Scene.FieldName);
+        var property = p.FindPropertyRelative("Name");
 
-        var newScene = EditorGUI.ObjectField(r, l, GetScene(scene.stringValue), typeof(SceneAsset), false);
+        var scene = GetScene(property.stringValue);
 
-        if (newScene == null) scene.stringValue = string.Empty;
+        scene = EditorGUI.ObjectField(r, l, scene, typeof(SceneAsset), false) as SceneAsset;
 
-        else if (newScene.name != scene.stringValue)
-        {
-            if (GetScene(newScene.name) == null) LogError(newScene.name);
-
-            else scene.stringValue = newScene.name;
-        }
+        property.stringValue = scene ? scene.name : string.Empty;
     }
 }
-
 #endif

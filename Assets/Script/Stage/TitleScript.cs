@@ -1,55 +1,62 @@
 using UnityEngine;
+using UnityEngine.UI;
 
-namespace Tank
+/// <summary>タイトル</summary>
+public class TitleScript : GraphicFaderScript
 {
-    /// <summary>タイトル</summary>
-    public class TitleScript : ImageFaderScript
+    [SerializeField] private GraphicFaderScript Fader;
+
+    /// <summary>ステージマネージャー</summary>
+    [SerializeField, LightColor] private StageManagerScript StageManager;
+
+    //[SerializeField, LightColor] private TutorialScript Tutorial;
+
+    /// <summary>タイトルオブジェクト</summary>
+    [SerializeField, LightColor] private GameObject TitleObj;
+
+    [SerializeField] private Button GameStartButton;
+    [SerializeField] private Button GameQuitButton;
+    //[SerializeField] private Button TutorialButton;
+
+    private void Start()
     {
-        /// <summary>ステージマネージャー</summary>
-        [SerializeField, LightColor] private StageManagerScript StageManager;
+        ReStart();                         //リスタート
 
-        /// <summary>タイトルオブジェクト</summary>
-        [SerializeField, LightColor] private GameObject TitleObj;
+        StageManager.OnGameClear = ReStart;//ゲームクリア時実行する関数を代入
 
-        private void Start()
-        {
-            ReStart();                         //リスタート
+        GameStartButton.onClick.AddListener(GameStart);
 
-            StageManager.OnGameClear = ReStart;//ゲームクリア時実行する関数を代入
-        }
+        //TutorialButton.onClick.AddListener(Tutorial.Active);
 
-        /// <summary>リスタート時実行</summary>
-        private void ReStart()
-        {
-            Run(() => TitleObj.SetActive(true), () => AudioScript.I.StageAudio.Play(StageClip.BGM));//フェードを開始 フェードイン時ステージをアクティブ フェードアウト時BGMを再生
-        }
+        GameQuitButton.onClick.AddListener(() => Fader.Run(ApplicationEx.Quit));
+    }
 
-        /// <summary>フェードイン時実行する関数</summary>
-        private void OnFadeIn()
-        {
-            TitleObj.SetActive(false);                                   //タイトルをアクティブ
+    /// <summary>リスタート時実行</summary>
+    private void ReStart()
+    {
+        Run(() => TitleObj.SetActive(true), () => AudioScript.I.StageAudio.Play(StageClip.BGM));//フェードを開始 フェードイン時ステージをアクティブ フェードアウト時BGMを再生
+    }
 
-            AudioScript.I.StageAudio.Audios[StageClip.BGM].Source.Stop();//BGMを停止
+    /// <summary>フェードイン時実行する関数</summary>
+    private void OnFadeIn()
+    {
+        TitleObj.SetActive(false);                                   //タイトルをアクティブ
 
-            StageManager.OnReStartFadeIn();                              //リスタートのフェードアウト時実行する関数を実行
-        }
+        AudioScript.I.StageAudio.Dictionary[StageClip.BGM].Source.Stop();//BGMを停止
 
-        /// <summary>ゲームを開始</summary>
-        private void GameStart()
-        {
-            if (IsRun) return;                           //フェード中なら/終了
-    
-            Run(OnFadeIn, StageManager.OnReStartFadeOut);//フェード開始 フェードイン時OnFadeIn関数を実行 フェードアウト時OnReStartFadeIn関数を実行
-        }
+        StageManager.OnReStartFadeIn();                              //リスタートのフェードアウト時実行する関数を実行
+    }
 
-        protected override void Update()
-        {
-            base.Update();                                           //基底クラスのUpdateをよびだす
+    /// <summary>ゲームを開始</summary>
+    private void GameStart()
+    {
+        if (IsRun) return;                           //フェード中なら/終了
 
-            if (Input.GetMouseButton(default) && TitleObj.activeSelf)//右クリック かつ タイトルオブジェクトがアクティブなら
-            {
-                GameStart();                                         //右クリックが押されたら/ゲームを開始
-            }
-        }
+        Run(OnFadeIn, StageManager.OnReStartFadeOut);//フェード開始 フェードイン時OnFadeIn関数を実行 フェードアウト時OnReStartFadeIn関数を実行
+    }
+
+    private void OnTutorial()
+    {
+
     }
 }

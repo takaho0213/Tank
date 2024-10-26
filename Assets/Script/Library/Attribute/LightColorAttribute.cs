@@ -17,16 +17,16 @@ public class LightColorDrawer : PropertyDrawer
 
     private bool IsGray(SerializedProperty p) => p.propertyType switch
     {
-        SerializedPropertyType.String          => p.stringValue          != default,
+        SerializedPropertyType.String => p.stringValue != default,
         SerializedPropertyType.ObjectReference => p.objectReferenceValue != default,
-        SerializedPropertyType.Integer         => p.intValue             != default,
-        SerializedPropertyType.Float           => p.floatValue           != default,
-        SerializedPropertyType.Color           => p.colorValue           != default,
-        SerializedPropertyType.Vector2         => p.vector2Value         != default,
-        SerializedPropertyType.Vector3         => p.vector3Value         != default,
-        SerializedPropertyType.Vector4         => p.vector4Value         != default,
-        SerializedPropertyType.Quaternion      => p.quaternionValue      != default,
-        _                                      => true,
+        SerializedPropertyType.Integer => p.intValue != default,
+        SerializedPropertyType.Float => p.floatValue != default,
+        SerializedPropertyType.Color => p.colorValue != default,
+        SerializedPropertyType.Vector2 => p.vector2Value != default,
+        SerializedPropertyType.Vector3 => p.vector3Value != default,
+        SerializedPropertyType.Vector4 => p.vector4Value != default,
+        SerializedPropertyType.Quaternion => p.quaternionValue != default,
+        _ => true,
     };
 
     public override void OnGUI(Rect r, SerializedProperty p, GUIContent l)

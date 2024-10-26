@@ -1,5 +1,4 @@
 ﻿using UnityEngine;
-using System.Collections.Generic;
 
 /// <summary>Audioの情報</summary>
 [System.Serializable]
@@ -28,22 +27,13 @@ public class AudioInfo
 
 /// <summary>Audioの情報Dictionary</summary>
 [System.Serializable]
-public class AudioInfo<T>
+public class AudioInfoDictionary<T> : SerializeDictionary<T, AudioInfo>
 {
-    /// <summary>AudioInfoペア配列</summary>
-    [SerializeField] private KeyValue<T, AudioInfo>[] audios;
-
-    /// <summary>AudioInfoペアDictionary</summary>
-    private Dictionary<T, AudioInfo> dic;
-
-    /// <summary></summary>
-    public IReadOnlyDictionary<T, AudioInfo> Audios => dic ??= audios.ToDictionary();
-
     /// <summary>再生</summary>
     /// <param name="type">再生するAudioの種類</param>
     public void Play(T type)
     {
-        if (Audios.TryGetValue(type, out var audio))
+        if (TryGetValue(type, out var audio))
         {
             audio.Play();
         }
@@ -53,7 +43,7 @@ public class AudioInfo<T>
     /// <param name="type">再生するAudioの種類</param>
     public void PlayOneShot(T type)
     {
-        if (Audios.TryGetValue(type, out var audio))
+        if (TryGetValue(type, out var audio))
         {
             audio.Play();
         }

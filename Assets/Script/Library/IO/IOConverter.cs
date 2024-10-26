@@ -1,9 +1,5 @@
-/// <summary>文字列へ書き込む際の変換クラス</summary>
 public static class IOConverter
 {
-    /// <summary>区切る文字列</summary>
-    public const string SplitText = ",";
-
     /// <summary>ObjectをJsonに変換</summary>
     public static string ToJson(this object data, bool prettyPrint = false) => UnityEngine.JsonUtility.ToJson(data, prettyPrint);
 
@@ -30,14 +26,14 @@ public static class IOConverter
     public static string BytesToString(this byte[] bytes) => System.Text.Encoding.UTF8.GetString(bytes);
 
     /// <summary>文字列をbyte文字列に変換</summary>
-    public static string StringToByteString(this string text) => string.Join(SplitText, StringToBytes(text));
+    public static string StringToByteString(this string text) => StringToBytes(text).JoinComma();
 
     /// <summary>byte文字列を文字列に変換</summary>
     public static bool TryByteStringToString(this string byteText, out string r)
     {
         r = string.Empty;                                  //返すテキストにEmptyを代入
 
-        var byteTexts = byteText.Split(SplitText);         //byte文字列配列
+        var byteTexts = byteText.SplitComma();             //byte文字列配列
 
         byte[] bytes = new byte[byteTexts.Length];         //byte配列を作成
 

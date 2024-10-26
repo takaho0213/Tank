@@ -2,7 +2,6 @@ using UnityEngine;
 using UnityEngine.Events;
 using System.Collections;
 
-/// <summary>フェーダー</summary>
 public class Fader
 {
     /// <summary>フェード速度</summary>

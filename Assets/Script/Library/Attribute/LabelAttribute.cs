@@ -9,8 +9,10 @@ using UnityEditor;
 [AttributeUsage(AttributeTargets.Field)]
 public class LabelAttribute : PropertyAttribute
 {
+    /// <summary>置換テキスト</summary>
     public readonly string Text;
 
+    /// <param name="text">置換テキスト</param>
     public LabelAttribute(string text) => Text = text;
 }
 
@@ -18,6 +20,7 @@ public class LabelAttribute : PropertyAttribute
 [AttributeUsage(AttributeTargets.Field)]
 public class AddLabelAttribute : LabelAttribute
 {
+    /// <param name="text">追加テキスト</param>
     public AddLabelAttribute(string text) : base($" : {text}") { }
 }
 
@@ -28,11 +31,11 @@ public class LabelDrawer : PropertyDrawer
 {
     public override void OnGUI(Rect r, SerializedProperty p, GUIContent l)
     {
-        var a = (LabelAttribute)attribute;
+        var label = attribute as LabelAttribute;
 
-        var add = a as AddLabelAttribute;
+        var addlabel = label as AddLabelAttribute;
 
-        l.text = add == null ? a.Text : l.text + add.Text;
+        l.text = addlabel == null ? label.Text : l.text + addlabel.Text;
 
         EditorGUI.PropertyField(r, p, l);
     }

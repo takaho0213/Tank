@@ -16,7 +16,7 @@ public abstract class FieldReferenceAttribute : PropertyAttribute
 
 #if UNITY_EDITOR
 [CustomPropertyDrawer(typeof(FieldReferenceAttribute))]
-public class FieldReferenceDrawer : PropertyDrawer
+public class GetFieldDrawer : PropertyDrawer
 {
     /// <summary>フィールド名</summary>
     protected string Name => ((FieldReferenceAttribute)attribute).Name;

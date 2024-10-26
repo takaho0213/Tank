@@ -10,38 +10,47 @@ using UnityEditor;
 public class Range01Attribute : PropertyAttribute { }
 
 #if UNITY_EDITOR
-[CustomPropertyDrawer(typeof(Range01Attribute))]
-public class Range01Drawer : PropertyDrawer
+public abstract class BaseRangeDrawer : PropertyDrawer
 {
-    private const int IMax = 1;
+    protected abstract int MaxInt(SerializedProperty p);
+    protected abstract int MinInt(SerializedProperty p);
 
-    private const float FMax = 1f;
-
-    protected virtual int IntMax(Rect r, SerializedProperty p, GUIContent l) => IMax;
-
-    protected virtual float FloatMax(Rect r, SerializedProperty p, GUIContent l) => FMax;
-
-    protected void Float(Rect r, SerializedProperty p, GUIContent l)
-    {
-        EditorGUI.Slider(r, p, default, FloatMax(r, p, l), l);
-    }
-
-    protected void Int(Rect r, SerializedProperty p, GUIContent l)
-    {
-        EditorGUI.IntSlider(r, p, default, IntMax(r, p, l), l);
-    }
+    protected abstract float MaxFloat(SerializedProperty p);
+    protected abstract float MinFloat(SerializedProperty p);
 
     public override void OnGUI(Rect r, SerializedProperty p, GUIContent l)
     {
         switch (p.propertyType)
         {
-            case SerializedPropertyType.Float: Float(r, p, l); return;
+            case SerializedPropertyType.Float:
 
-            case SerializedPropertyType.Integer: Int(r, p, l); return;
+                EditorGUI.Slider(r, p, MinFloat(p), MaxFloat(p), l);
+
+                return;
+
+            case SerializedPropertyType.Integer:
+
+                EditorGUI.IntSlider(r, p, MinInt(p), MaxInt(p), l);
+
+                return;
+
+            default:
+
+                EditorGUI.PropertyField(r, p, l);
+
+                return;
         }
-
-        EditorGUI.PropertyField(r, p, l);
     }
+}
+
+[CustomPropertyDrawer(typeof(Range01Attribute))]
+public class Range01Drawer : BaseRangeDrawer
+{
+    protected override int MaxInt(SerializedProperty p) => (int)MathEx.OneF;
+    protected override int MinInt(SerializedProperty p) => default;
+
+    protected override float MaxFloat(SerializedProperty p) => MathEx.OneF;
+    protected override float MinFloat(SerializedProperty p) => default;
 }
 #endif
 
