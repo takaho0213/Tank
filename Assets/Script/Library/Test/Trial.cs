@@ -1,9 +1,6 @@
-﻿# if UNITY_EDITOR
+﻿#if UNITY_EDITOR
 
-using System;
-using System.Linq;
 using UnityEditor;
-using UnityEngine;
 
 [InitializeOnLoad]
 public class Trial
@@ -15,4 +12,5 @@ public class Trial
         //Selection.activeGameObject;
     }
 }
-# endif
+
+#endif

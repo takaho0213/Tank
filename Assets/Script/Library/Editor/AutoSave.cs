@@ -25,9 +25,9 @@ public static class AutoSave
 
     private static void Update()
     {
-        if (interval && !EditorApplication.isPlaying && EditorSceneManager.SaveOpenScenes())
+        if (interval && !EditorApplication.isPlaying && EditorSceneManager.SaveOpenScenes())//インターバルが来た かつ エディターが実行中じゃない かつ セーブが出来たら
         {
-            Debug.Log($"Scene名\"{SceneManager.GetActiveScene().name}\"をAutoSave");
+            Debug.Log($"AutoSave SceneName \"{SceneManager.GetActiveScene().name}\"");
         }
     }
 }

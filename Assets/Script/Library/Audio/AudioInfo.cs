@@ -10,6 +10,8 @@ public class AudioInfo
     /// <summary>再生するClipInfo</summary>
     [field: SerializeField] public ClipInfo Clip { get; private set; }
 
+    public bool IsPlaying => Source.isPlaying;
+
     /// <summary>再生</summary>
     public void Play()
     {
@@ -19,10 +21,9 @@ public class AudioInfo
     }
 
     /// <summary>一回再生</summary>
-    public void PlayOneShot()
-    {
-        Source.PlayOneShot(Clip.Clip, Clip.Volume);
-    }
+    public void PlayOneShot() => Source.PlayOneShot(Clip.Clip, Clip.Volume);
+
+    public void Stop() => Source.Stop();
 }
 
 /// <summary>Audioの情報Dictionary</summary>

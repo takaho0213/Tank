@@ -2,10 +2,10 @@ using System;
 using System.Linq;
 
 /// <summary></summary>
-public static class EnumInfo<T> where T : Enum
+public static class EnumEx<T> where T : Enum
 {
     /// <summary>タイプ</summary>
-    public static readonly System.Type Type;
+    public static readonly Type Type;
 
     /// <summary>項目数</summary>
     public static readonly int Length;
@@ -19,7 +19,7 @@ public static class EnumInfo<T> where T : Enum
     /// <summary>stringに変換した項目配列</summary>
     public static readonly string[] StringValues;
 
-    static EnumInfo()
+    static EnumEx()
     {
         Type = typeof(T);
         Values = (T[])Enum.GetValues(Type);

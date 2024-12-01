@@ -1,5 +1,5 @@
 /// <summary>Csv形式のファイルへのI/Oを行う</summary>
-public class CsvIOScript : TextIOScript
+public class CsvIOScript : BaseIOScript
 {
     /// <summary>拡張子</summary>
     private const string csv = nameof(csv);

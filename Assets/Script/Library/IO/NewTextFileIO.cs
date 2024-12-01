@@ -16,6 +16,8 @@ public class NewTextFileIO
 
     public FileInfo Info => info ??= new(Path);
 
+#if UNITY_EDITOR
+
     [CustomPropertyDrawer(typeof(NewTextFileIO), true)]
     public class TestSingleTextFileIODrawer : PropertyDrawer
     {
@@ -46,4 +48,5 @@ public class NewTextFileIO
             }
         }
     }
+#endif
 }

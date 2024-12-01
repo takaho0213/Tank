@@ -2,6 +2,8 @@ using UnityEngine;
 
 public class TankTargetSearchScript : MonoBehaviour
 {
+    [SerializeField, LightColor] private Collider2D targetColl;
+
     /// <summary>発射するレイの形</summary>
     [SerializeField, LightColor] private CapsuleCollider2D rayColl;
 
@@ -21,8 +23,6 @@ public class TankTargetSearchScript : MonoBehaviour
 
     /// <summary>発射するレイの形のトランスフォーム</summary>
     private Transform rayCollTrafo;
-
-    public Vector2 SearchRot => trafo.up;
 
     /// <summary>カプセル型のRayを発射</summary>
     /// <param name="o">発射する座標</param>
@@ -48,21 +48,26 @@ public class TankTargetSearchScript : MonoBehaviour
     /// <param name="target">ターゲット座標または方向</param>
     /// <param name="hit">接触したオブジェクトの情報</param>
     /// <returns>ヒットしたか</returns>
-    public bool Ray(Vector3 target, out RaycastHit2D hit)
+    public bool Ray(Vector3 target)
     {
         var pos = trafo.position;                         //自身の位置
 
-        hit = CapsuleRayCast(pos, target - pos, rayLayer);//
+        var hit = CapsuleRayCast(pos, target - pos, rayLayer);//
 
-        return hit;                                       //ヒットしたか
+        return hit && hit.collider == targetColl;//ヒットしたか
+    }
+
+    public Vector2 Rotate()
+    {
+        trafo.Rotate(angle);//回転
+
+        return trafo.up;
     }
 
     /// <summary>反射するカプセル型のRayを発射</summary>
     /// <returns>反射先にヒットしたら ? 一度目のレイの方向 : (0, 0)</returns>
-    public RaycastHit2D ReflectionRay()
+    public bool ReflectionRay()
     {
-        trafo.Rotate(angle);                                                                   //回転
-
         var pos = trafo.position;                                                              //自身の位置
 
         var d = trafo.up;                                                                      //レイの方向
@@ -71,6 +76,6 @@ public class TankTargetSearchScript : MonoBehaviour
 
         var ray2 = CapsuleRayCast(ray1.centroid, Vector2.Reflect(d, ray1.normal), playerLayer);//ヒットした場所からレイを発射しヒットしたか
 
-        return ray2;                                                                           //ヒットしたら ? 一度目のレイの方向 : (0, 0)
+        return ray2 && ray2.collider == targetColl;                                                                           //ヒットしたら ? 一度目のレイの方向 : (0, 0)
     }
 }

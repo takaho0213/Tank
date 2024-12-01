@@ -17,11 +17,13 @@ public class TankDamageScript : MonoBehaviour
     /// <summary>死亡した際のエフェクトオブジェクト</summary>
     [SerializeField, LightColor] private GameObject deathEffectObj;
 
+    [SerializeField, LightColor] private TankDamageUIScript damageUI;
+
     /// <summary>被弾SEを再生するAudioSource</summary>
     [SerializeField, LightColor] private AudioSource damageSource;
 
     /// <summary>体力</summary>
-    [SerializeField] private int health;
+    [SerializeField] private int maxHealth;
 
     /// <summary>赤体力ゲージの補間値</summary>
     [SerializeField, Range01] private float redHealthBarLerp;
@@ -30,7 +32,7 @@ public class TankDamageScript : MonoBehaviour
     [SerializeField, Tag] private string[] damageTags;
 
     /// <summary>最大体力</summary>
-    private int maxHealth;
+    private int health;
 
     /// <summary>エフェクト表示時間</summary>
     private WaitForSeconds effectWait;
@@ -44,6 +46,11 @@ public class TankDamageScript : MonoBehaviour
     /// <summary>死亡しているか</summary>
     public bool IsDeath => health <= default(int);
 
+    private void Awake()
+    {
+        effectWait = new(AudioScript.I.TankAudio[TankClip.Explosion].Length);
+    }
+
     /// <summary>エネミーの情報をセット</summary>
     /// <param name="i">エネミーの情報</param>
     public void SetInfo(TankEnemyInfoScript i)
@@ -54,18 +61,10 @@ public class TankDamageScript : MonoBehaviour
     }
 
     /// <summary>体力をリセット</summary>
-    public void HealthReSet()
-    {
-        if (maxHealth == default) maxHealth = health;//最大体力が0なら/最大体力を更新
+    public void HealthReSet() => health = maxHealth;//最大体力を代入
 
-        health = maxHealth;                          //最大体力を代入
-    }
-
-    /// <summary>Healthを1回復</summary>
-    public void HealthRecovery()
-    {
-        if (health < maxHealth) health++;//現在の体力が最大体力より下なら体力を + 1
-    }
+    /// <summary>Healthを最大まで回復</summary>
+    public void HealthRecovery() => health = maxHealth;//体力に最大体力を代入
 
     /// <summary>死亡演出</summary>
     /// <param name="c">演出終了時実行するコールバック</param>
@@ -73,7 +72,7 @@ public class TankDamageScript : MonoBehaviour
     {
         deathEffectObj.SetActive(true);                                                                //死亡エフェクトをアクティブ
 
-        yield return effectWait ??= new(AudioScript.I.TankAudio.Dictionary[TankClip.Explosion].Clip.length);//待機
+        yield return effectWait;//待機
 
         deathEffectObj.SetActive(false);                                                               //死亡エフェクトを非アクティブ
 
@@ -85,29 +84,29 @@ public class TankDamageScript : MonoBehaviour
     /// <param name="damage">ダメージ演出</param>
     public IEnumerator Hit(Collider2D hit, Func<float, IEnumerator> damage)
     {
-        if (!isNoDamage && damageTags.Any((v) => hit.CompareTag(v)))      //ノーダメージじゃない かつ ダメージを受けるタグか
+        if (!isNoDamage && damageTags.Any((v) => hit.CompareTag(v)))//ノーダメージじゃない かつ ダメージを受けるタグか
         {
-            health--;                                                     //体力 - 1
+            health--;                                               //体力 - 1
 
-            var audio = AudioScript.I.TankAudio;                          //タンクAudio
+            var audio = AudioScript.I.TankAudio;                    //タンクAudio
 
-            if (health == default)                                        //体力が0なら
+            if (health == default)                                  //体力が0なら
             {
-                OnHealthGone?.Invoke();                                   //体力が0になった際実行する関数を実行
+                OnHealthGone?.Invoke();                             //体力が0になった際実行する関数を実行
 
-                audio.Dictionary[TankClip.Explosion].PlayOneShot(damageSource);//爆発SEを再生
+                audio[TankClip.Explosion].PlayOneShot(damageSource);//爆発SEを再生
             }
-            else if (health > default(int))                               //体力が0より上なら
+            else if (health > default(int))                         //体力が0より上なら
             {
-                isNoDamage = true;                                        //ダメージを受けない状態かをtrue
+                isNoDamage = true;                                  //ダメージを受けない状態かをtrue
 
-                var clip = audio.Dictionary[TankClip.Damage];                  //ダメージクリップ
+                var clip = audio[TankClip.Damage];                  //ダメージクリップ
 
-                clip.PlayOneShot(damageSource);                           //ダメージSEを再生
+                clip.PlayOneShot(damageSource);                     //ダメージSEを再生
 
-                yield return damage.Invoke(clip.Clip.length);             //ダメージ演出
+                yield return damage.Invoke(clip.Length);       //ダメージ演出
 
-                isNoDamage = false;                                       //ダメージを受けない状態かをfalse
+                isNoDamage = false;                                 //ダメージを受けない状態かをfalse
             }
         }
     }
@@ -115,12 +114,6 @@ public class TankDamageScript : MonoBehaviour
     /// <summary>体力バーを更新</summary>
     public void UpdateHealthGauge()
     {
-        if (maxHealth == default) maxHealth = health;                                          //最大体力が0なら/最大体力を更新
-
-        float v = health / (float)maxHealth;                                                   //体力ゲージの値
-
-        greenHealthGauge.fillAmount = v;                                                       //緑ゲージを更新
-
-        redHealthGauge.fillAmount = Mathf.Lerp(redHealthGauge.fillAmount, v, redHealthBarLerp);//赤ゲージを補間値で更新
+        damageUI.SetHealthGauge(health / (float)maxHealth);
     }
 }

@@ -1,4 +1,3 @@
-using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 using System.Collections;
@@ -20,37 +19,37 @@ public enum UI
 public class StageEndUIScript : MonoBehaviour
 {
     /// <summary>目的地</summary>
-    [SerializeField, LightColor] private Transform StageEndTMPTarget;
+    [SerializeField, LightColor] private Transform tmpTarget;
 
     /// <summary>ステージ終了イメージ</summary>
-    [SerializeField, LightColor] private Image StageEndImage;
+    [SerializeField, LightColor] private Image image;
 
     /// <summary>ステージ終了時に動かすテキスト配列</summary>
-    [SerializeField] private MoveText[] StageEndTexts;
+    [SerializeField] private MoveText[] moveTexts;
 
     /// <summary>TMPの目的の色</summary>
-    [SerializeField] private Color TMPColor;
+    [SerializeField] private Color tmpColor;
 
     /// <summary>目標の色</summary>
-    [SerializeField] private Color ImageColor;
+    [SerializeField] private Color imageColor;
 
     /// <summary>UIの補間値</summary>
-    [SerializeField, Range01] private float UILerp;
+    [SerializeField, Range01] private float uiLerp;
 
     /// <summary>全クリテキスト</summary>
-    [SerializeField] private string AllClearText;
+    [SerializeField] private string allClearText;
     /// <summary>クリアテキスト</summary>
-    [SerializeField] private string ClearText;
+    [SerializeField] private string clearText;
     /// <summary>ゲームオーバーテキスト</summary>
-    [SerializeField] private string GameOverText;
+    [SerializeField] private string gameOverText;
     /// <summary>リトライテキスト</summary>
-    [SerializeField] private string RetryText;
+    [SerializeField] private string retryText;
 
     public void Start()
     {
-        foreach (var t in StageEndTexts)//StageEndTextsの要素数分繰り返す
+        foreach (var t in moveTexts)//StageEndTextsの要素数分繰り返す
         {
-            t.Init();                   //初期化
+            t.Init();               //初期化
         }
     }
 
@@ -60,65 +59,38 @@ public class StageEndUIScript : MonoBehaviour
     /// <returns>終了条件を満たしたら終了</returns>
     public IEnumerator Display(UI type, System.Func<bool> isBreak)
     {
-        var target = StageEndTMPTarget.position;           //目的座標
+        var target = tmpTarget.position;               //目的座標
 
-        string text = type switch                          //分岐条件UIの種類
+        string text = type switch                      //分岐条件UIの種類
         {
-            UI.Clear => ClearText,                      //クリア        なら クリアテキスト
-            UI.AllClear => AllClearText,                   //全クリ        なら 全クリテキスト
-            UI.Retry => RetryText,                      //リトライ      なら リトライテキスト
-            UI.GameOver => GameOverText,                   //ゲームオーバーなら ゲームオーバーテキスト
-            _ => string.Empty                    //それ以外      なら Empty
+            UI.Clear => clearText,                     //クリア        なら クリアテキスト
+            UI.AllClear => allClearText,               //全クリ        なら 全クリテキスト
+            UI.Retry => retryText,                     //リトライ      なら リトライテキスト
+            UI.GameOver => gameOverText,               //ゲームオーバーなら ゲームオーバーテキスト
+            _ => string.Empty                          //それ以外      なら Empty
         };
 
-        foreach (var t in StageEndTexts) t.TMP.text = text;//テキストを代入
+        foreach (var t in moveTexts) t.TMP.text = text;//テキストを代入
 
-        while (!isBreak.Invoke())                          //終了条件にならない限り繰り返す
+        while (!isBreak.Invoke())                      //終了条件にならない限り繰り返す
         {
-            StageEndImage.LerpColor(ImageColor, UILerp);        //補間値を代入
+            image.LerpColor(imageColor, uiLerp);       //補間値を代入
 
-            foreach (var t in StageEndTexts)               //MoveTextsの要素数分繰り返す
+            foreach (var t in moveTexts)               //MoveTextsの要素数分繰り返す
             {
-                t.TMP.LerpColor(TMPColor, UILerp);              //補間値を代入
+                t.TMP.LerpColor(tmpColor, uiLerp);     //補間値を代入
 
-                t.Trafo.LerpPosition(target, UILerp);      //補間値を代入
+                t.Trafo.LerpPosition(target, uiLerp);  //補間値を代入
             }
 
-            yield return null;                             //1フレーム待機
+            yield return null;                         //1フレーム待機
         }
 
-        StageEndImage.color = Color.clear;                 //ImageのColorに(0, 0, 0, 0)を代入
+        image.color = Color.clear;                     //ImageのColorに(0, 0, 0, 0)を代入
 
-        foreach (var t in StageEndTexts)                   //MoveTextsの要素数分繰り返す
+        foreach (var t in moveTexts)                   //MoveTextsの要素数分繰り返す
         {
-            t.ReSet();                                     //リセット
+            t.ReSet();                                 //リセット
         }
-    }
-}
-
-/// <summary>移動するテキスト</summary>
-[System.Serializable]
-public class MoveText
-{
-    /// <summary>Transform</summary>
-    [field: SerializeField, LightColor] public Transform Trafo { get; private set; }
-
-    /// <summary>TextMeshProUGUI</summary>
-    [field: SerializeField, LightColor] public TextMeshProUGUI TMP { get; private set; }
-
-    /// <summary>初期位置</summary>
-    private Vector3 InitPos;
-
-    /// <summary>初期位置セット</summary>
-    public void Init() => InitPos = Trafo.position;
-
-    /// <summary>リセット</summary>
-    public void ReSet()
-    {
-        TMP.color = Color.clear; //(0, 0, 0, 0)を代入
-
-        TMP.text = string.Empty; //テキストにEmptyを代入
-
-        Trafo.position = InitPos;//初期位置を代入
     }
 }

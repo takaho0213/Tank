@@ -13,6 +13,8 @@ public class ClipInfo
     /// <summary>ƒ{ƒŠƒ…[ƒ€</summary>
     public float Volume { get => volume; set => volume = Mathf.Clamp01(value); }
 
+    public float Length => Clip.length;
+
     /// <summary>Ä¶</summary>
     /// <param name="s">Ä¶‚·‚éAudioSource</param>
     public void Play(AudioSource s)

@@ -11,7 +11,7 @@ public class AudioMixerInfoScript : MonoBehaviour
     {
         foreach (var item in Groups)
         {
-            AudioIO.Value.TryGetValue(item.Key, out var data);
+            AudioIO.Data.TryGetValue(item.Key, out var data);
 
             item.Value.Init(data ??= new());
         }
@@ -21,7 +21,7 @@ public class AudioMixerInfoScript : MonoBehaviour
     {
         foreach (var item in Groups)
         {
-            AudioIO.Value.TryGetValue(item.Key, out var data);
+            AudioIO.Data.TryGetValue(item.Key, out var data);
 
             item.Value.Save(data ??= new());
         }

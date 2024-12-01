@@ -1,28 +1,62 @@
-using TMPro;
 using UnityEngine;
-using UnityEngine.UI;
+using UnityEngine.Events;
 
-/// <summary>ステージアイキャッチ</summary>
-public class StageEyeCatchScript : GraphicsFaderScript
+public class StageEyeCatchScript : MonoBehaviour
 {
-    /// <summary>アイキャッチInage</summary>
-    [SerializeField, LightColor] private Image Image;
-    /// <summary>アイキャッチTMP</summary>
-    [SerializeField, LightColor] private TextMeshProUGUI TMP;
-    /// <summary>プレイヤーライフTMP</summary>
-    [SerializeField, LightColor] private TextMeshProUGUI PlayerLifeTMP;
+    /// <summary>アイキャッチ</summary>
+    [SerializeField, LightColor] private StageEyeCatchUIScript eyecatchUI;
 
-    /// <summary>ステージテキスト置換</summary>
-    [SerializeField] private StringReplace StageTextReplace;
-    /// <summary>プレイヤーライフテキスト置換</summary>
-    [SerializeField] private StringReplace PlayerLifeTextReplace;
+    /// <summary>ステージ開始時の待機時間</summary>
+    [SerializeField] private float staegStartWaitTime;
 
-    /// <summary>ステージテキスト</summary>
-    public string StageText { set => TMP.text = StageTextReplace.Replace(value); }
+    /// <summary>ステージ開始時の待機時間</summary>
+    private Interval stageStartWaitInterval;
 
-    /// <summary>プレイヤーライフテキスト</summary>
-    public string PlayerLifeText { set => PlayerLifeTMP.text = PlayerLifeTextReplace.Replace(value); }
+    /// <summary>アイキャッチのSEを再生する関数</summary>
+    private UnityAction playEyeCatchSE;
 
-    /// <summary>表示</summary>
-    public void Display() => Image.color = TMP.color = PlayerLifeTMP.color += Color.black;
+    /// <summary>BGMのInfo</summary>
+    private AudioInfo audioBGM;
+
+    /// <summary></summary>
+    public GraphicsFaderScript Fader => eyecatchUI.Fader;
+
+    /// <summary>タンクが動けない状態か</summary>
+    public bool IsNotMove => Fader.IsRun || !stageStartWaitInterval.IsOver;
+
+    private void Start()
+    {
+        stageStartWaitInterval = new(time: staegStartWaitTime);
+
+        playEyeCatchSE = AudioScript.I.StageAudio[StageClip.EyeCatch].Play;
+
+        audioBGM = AudioScript.I.StageAudio[StageClip.BGM];
+    }
+
+    /// <summary>アイキャッチをフェードする関数</summary>
+    /// <param name="i">フェードイン時実行する関数</param>
+    /// <param name="o">フェードアウト時実行する関数</param>
+    public void Fade(UnityAction i, UnityAction o)
+    {
+        audioBGM.Stop();                        //BGMを停止
+
+        i += playEyeCatchSE;                           //アイキャッチSEを再生する関数を加算代入
+
+        Fader.Run(i + playEyeCatchSE, o + OnStageStart);//フェード開始 フェードインした際引数の関数を実行
+    }
+
+    /// <summary>ステージを開始した際実行</summary>
+    private void OnStageStart()
+    {
+        stageStartWaitInterval.ReSet();//インターバルをリセット
+
+        audioBGM.Play();               //BGMを再生
+    }
+
+    public void DisplayUI() => eyecatchUI.Display();
+
+    /// <summary>ステージ数,ライフ数を表示するテキストをセット</summary>
+    /// <param name="stage">ステージ数</param>
+    /// <param name="life">ライフ数</param>
+    public void SetText(int stage, int life) => eyecatchUI.SetText(stage, life);
 }

@@ -25,7 +25,7 @@ public class TankMovingPartsScript : MonoBehaviour
 
     /// <summary>タレットをターゲットの方向へ向ける</summary>
     /// <param name="target">ターゲットの方向</param>
-    public void TargetLookAt(Vector3 target)
+    public void TargetLookAt(Vector2 target)
     {
         turret.LerpRotation(target, turretLerp, Vector3.forward);//タレットをターゲットの方向への補間値を代入
     }

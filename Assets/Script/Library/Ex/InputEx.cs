@@ -96,7 +96,7 @@ public static class Scroll
 public static class Key
 {
     /// <summary>KeyCode‚Ì‚·‚×‚Ä‚Ì—v‘f</summary>
-    public static readonly KeyCode[] KeyCodes = EnumInfo<KeyCode>.Values;
+    public static readonly KeyCode[] KeyCodes = EnumEx<KeyCode>.Values;
 
     /// <summary>“ü—Í‚³‚ê‚½•¶Žš—ñ</summary>
     public static string String => Input.inputString;

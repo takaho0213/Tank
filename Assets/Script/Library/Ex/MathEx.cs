@@ -273,7 +273,6 @@ public static class MathEx
     /// <summary>Å‘åŒö–ñ”</summary>
     public static int Gcd(int x, int y)
     {
-        // x >= y ‚É‚·‚é
         if (x < y)
         {
             var z = x;

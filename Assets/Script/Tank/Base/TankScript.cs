@@ -1,3 +1,4 @@
+using Unity.Burst.CompilerServices;
 using UnityEngine;
 using UnityEngine.Events;
 
@@ -5,7 +6,7 @@ using UnityEngine.Events;
 public abstract class TankScript : MonoBehaviour
 {
     /// <summary>マネージャー</summary>
-    [SerializeField, LightColor] protected StageManagerScript stageManager;
+    [SerializeField, LightColor] protected StageSystemScript stageSystem;
 
     /// <summary>自身のObject</summary>
     [SerializeField, LightColor] protected GameObject obj;
@@ -27,14 +28,13 @@ public abstract class TankScript : MonoBehaviour
 
     [SerializeField, LightColor] protected TankBulletLineScript line;
 
-    /// <summary>発射Interval</summary>
-    [SerializeField] protected Interval shootInterval;
-
     /// <summary>死亡演出が終わった際実行</summary>
     protected UnityAction onDeath;
 
+    protected abstract TankMoveScript BaseMove { get; }
+
     /// <summary>移動できない状態か</summary>
-    protected bool IsNotMove => stageManager.IsNotMove || damage.IsDeath;
+    protected bool IsNotMove => stageSystem.IsNotMove || damage.IsDeath;
 
     /// <summary>アクティブか</summary>
     public bool IsActive
@@ -52,6 +52,17 @@ public abstract class TankScript : MonoBehaviour
         line.Init(fillColor.Color);        //
 
         damage.OnHealthGone = OnHealthGone;//体力が0になった際実行する関数をセット
+
+        BaseMove.Init();
+
+        cannon.Init();
+    }
+
+    protected virtual void OnTriggerEnter2D(Collider2D hit)
+    {
+        if (IsNotMove) return;                                 //移動できない状態なら
+
+        StartCoroutine(damage.Hit(hit, fillColor.DamageColor));//ダメージエフェクトを開始
     }
 
     /// <summary>positionとrotationをセット</summary>
@@ -74,10 +85,30 @@ public abstract class TankScript : MonoBehaviour
         StartCoroutine(damage.DeathEffect(onDeath));//死亡演出を開始
     }
 
-    protected virtual void OnTriggerEnter2D(Collider2D hit)
+    protected virtual void Move()
     {
-        if (IsNotMove) return;                                 //移動できない状態なら
+        line.CreateLine();
+    }
 
-        StartCoroutine(damage.Hit(hit, fillColor.DamageColor));//ダメージエフェクトを開始
+    protected virtual void NotMove()
+    {
+        BaseMove.Stop();
+    }
+
+    protected virtual void Always()
+    {
+        damage.UpdateHealthGauge();            //体力バーを更新
+
+        parts.CaterpillarLookAt(BaseMove.Velocity);//キャタピラを回転
+
+        BaseMove.MoveSE();
+    }
+
+    protected virtual void FixedUpdate()
+    {
+        Always();
+
+        if (IsNotMove) NotMove();
+        else Move();
     }
 }

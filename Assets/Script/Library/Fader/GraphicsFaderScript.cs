@@ -23,15 +23,11 @@ public class GraphicsFaderScript : FaderScript
     [CustomEditor(typeof(GraphicsFaderScript), true)]
     public class UIFaderEditor : FaderEditor
     {
-        protected GraphicsFaderScript imageScript;
-
         protected SerializedProperty graphicsProperty;
 
         protected override void OnEnable()
         {
             base.OnEnable();
-
-            imageScript = (GraphicsFaderScript)target;
 
             graphicsProperty = serializedObject.FindProperty(nameof(graphics));
         }

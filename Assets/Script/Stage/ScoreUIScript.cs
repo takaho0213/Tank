@@ -1,5 +1,4 @@
 using TMPro;
-using System;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
@@ -9,63 +8,63 @@ using System.Collections;
 public class ScoreUIScript : MonoBehaviour
 {
     /// <summary>スコアのセーブ</summary>
-    [SerializeField, LightColor] private TextIOScript ClearTimeIO;
+    [SerializeField, LightColor] private BaseIOScript clearTimeIO;
 
     /// <summary>スコアイメージ</summary>
-    [SerializeField, LightColor] private Image ScoreImage;
+    [SerializeField, LightColor] private Image scoreImage;
 
     /// <summary>スコアTMP</summary>
-    [SerializeField, LightColor] private TextMeshProUGUI ScoreTMP;
+    [SerializeField, LightColor] private TextMeshProUGUI scoreTMP;
 
     /// <summary>スコアテキスト</summary>
-    [SerializeField] private StringReplace2 ScoreTextR2;
+    [SerializeField] private StringReplace2 scoreTextR2;
     /// <summary>全クリテキスト</summary>
-    [SerializeField] private StringReplace2 AllClearTextR2;
+    [SerializeField] private StringReplace2 allClearTextR2;
 
     /// <summary>目標の色</summary>
-    [SerializeField] private Color ScoreImageColor;
+    [SerializeField] private Color scoreImageColor;
 
     /// <summary>スコアイメージの補間値</summary>
-    [SerializeField, Range01] private float ScoreImageLerp;
+    [SerializeField, Range01] private float scoreImageLerp;
 
     /// <summary>スコアテキスト加算インターバル</summary>
-    [SerializeField] private float ScoreTextInterval;
+    [SerializeField] private float scoreTextInterval;
 
     /// <summary>表示するスコア数</summary>
-    [SerializeField] private int DisplayScoreCount;
+    [SerializeField] private int displayScoreCount;
 
     /// <summary>文字列結合</summary>
-    private StringUnion ScoreUnion;
+    private StringUnion scoreUnion;
 
     /// <summary>SE待機</summary>
-    private WaitForSeconds WaitScoreSE;
+    private WaitForSeconds waitScoreSE;
 
     /// <summary>スコアリスト</summary>
-    private SerializeList<Score> ScoreList;
+    private SerializeList<Score> scoreList;
 
     public void Start()
     {
-        ScoreUnion ??= new(ScoreTextInterval);           //インスタンスを作成
+        scoreUnion ??= new(scoreTextInterval);               //インスタンスを作成
 
-        ScoreList = ClearTimeIO.Load<SerializeList<Score>>();//スコアリスト
+        scoreList = clearTimeIO.Load<SerializeList<Score>>();//スコアリスト
     }
 
     /// <summary>スコアリストをソートしセーブ</summary>
     /// <param name="current">現在のスコア</param>
     public void ScoreListSort(Score current)
     {
-        ScoreList.Add(current);                            //スコアを追加
+        scoreList.Add(current);                            //スコアを追加
 
-        ScoreList.Sort((a, b) => a.Time.CompareTo(b.Time));//スコアリストをソート
+        scoreList.Sort((a, b) => a.Time.CompareTo(b.Time));//スコアリストをソート
 
-        int count = ScoreList.Count - DisplayScoreCount;   //削除数
+        int count = scoreList.Count - displayScoreCount;   //削除数
 
         for (int i = default; i < count; i++)              //削除数分繰り返す
         {
-            ScoreList.Remove(ScoreList.Last());            //最後の要素を削除
+            scoreList.Remove(scoreList.Last());            //最後の要素を削除
         }
 
-        ClearTimeIO.Save(ScoreList, true);                      //スコアをセーブ
+        clearTimeIO.Save(scoreList, true);                 //スコアをセーブ
     }
 
     /// <summary>スコアテキストを生成</summary>
@@ -73,14 +72,14 @@ public class ScoreUIScript : MonoBehaviour
     /// <returns>表示テキスト</returns>
     private string ScoreText(string currentText)
     {
-        string text = string.Empty;                                             //表示テキスト
+        string text = string.Empty;                                                                //表示テキスト
 
-        for (int i = default; i < ScoreList.Count; i++)                         //スコアリスト分繰り返す
+        for (int i = default; i < scoreList.Count; i++)                                            //スコアリスト分繰り返す
         {
-            text += ScoreTextR2.Replace2((i + 1).ToString(), ScoreList[i].Text) + StringEx.NewLine;//表示テキストを加算代入
+            text += scoreTextR2.Replace2((i + 1).ToString(), scoreList[i].Text) + StringEx.NewLine;//表示テキストを加算代入
         }
 
-        return AllClearTextR2.Replace2(currentText, text);                      //表示テキストを置換
+        return allClearTextR2.Replace2(currentText, text);                                         //表示テキストを置換
     }
 
     /// <summary>スコアを表示</summary>
@@ -88,32 +87,32 @@ public class ScoreUIScript : MonoBehaviour
     /// <returns>文字列を全て結合し終えたら終了</returns>
     private IEnumerator ScoreDisplay(string text)
     {
-        do                                                   //最低一回は処理したいのでdo whileを使用
+        do                                                        //最低一回は処理したいのでdo whileを使用
         {
-            ScoreImage.LerpColor(ScoreImageColor, ScoreImageLerp);//補間値を代入
+            scoreImage.LerpColor(scoreImageColor, scoreImageLerp);//補間値を代入
 
-            ScoreTMP.text = ScoreUnion.Union(text);          //文字列を結合
+            scoreTMP.text = scoreUnion.Union(text);               //文字列を結合
 
-            if (ScoreUnion.IsAll) yield break;               //全て結合し終えたら終了
+            if (scoreUnion.IsAll) yield break;                    //全て結合し終えたら終了
 
-            yield return null;                               //1フレーム停止
+            yield return null;                                    //1フレーム停止
         }
-        while (!ScoreUnion.IsAll);                           //文字列がすべて結合されていない限り繰り返す
+        while (!scoreUnion.IsAll);                                //文字列がすべて結合されていない限り繰り返す
     }
 
     /// <summary>UIをリセット</summary>
     /// <returns>SEが終わり次第終了</returns>
-    private IEnumerator UIReSet()
+    private IEnumerator ReSetUI()
     {
-        var audio = AudioScript.I.StageAudio.Dictionary[StageClip.Score];//スコアオーディオ
+        var audio = AudioScript.I.StageAudio[StageClip.Score];//スコアオーディオ
 
-        audio.Play();                                                //SEを再生
+        audio.Play();                                                    //SEを再生
 
-        yield return WaitScoreSE ??= new(audio.Clip.Clip.length);    //待機
+        yield return waitScoreSE ??= new(audio.Clip.Length);        //待機
 
-        ScoreImage.color = Color.clear;                              //色をクリアにする
+        scoreImage.color = Color.clear;                                  //色をクリアにする
 
-        ScoreTMP.text = string.Empty;                                //TMPのテキストをEmptyにする
+        scoreTMP.text = string.Empty;                                    //TMPのテキストをEmptyにする
     }
 
     /// <summary>スコアUIを表示</summary>
@@ -129,24 +128,6 @@ public class ScoreUIScript : MonoBehaviour
 
         yield return ScoreDisplay(text);   //スコアを表示
 
-        yield return UIReSet();            //UIをリセット
+        yield return ReSetUI();            //UIをリセット
     }
-}
-
-[System.Serializable]
-public class Score
-{
-    /// <summary>変換する際のフォーマット</summary>
-    private const string Format = @"hh\:mm\:ss\.ff";
-
-    /// <summary>スコアテキスト</summary>
-    public string Text;
-
-    /// <summary>クリア時間</summary>
-    public float Time;
-
-    /// <param name="time">クリア時間</param>
-    public Score(float time) => Text = TimeSpan.FromSeconds(Time = time).ToString(Format);//スコアテキストを作成
-
-    public Score() { }
 }

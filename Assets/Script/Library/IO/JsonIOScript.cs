@@ -1,5 +1,5 @@
 /// <summary>Json形式のファイルへのI/Oを行う</summary>
-public class JsonIOScript : TextIOScript
+public class JsonIOScript : BaseIOScript
 {
     /// <summary>拡張子</summary>
     public const string json = nameof(json);

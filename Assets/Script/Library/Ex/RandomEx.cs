@@ -8,7 +8,7 @@ public static class RandomEx
     public static readonly System.Random SystemRandom = new();
 
     /// <summary>ランダムにbool型の値を返す</summary>
-    public static bool Boolean => Random.value <= MathEx.Half;
+    public static bool Bool => Random.value <= MathEx.Half;
 
     /// <summary>Min ～ Max内の値を返す</summary>
     public static int Range(int min, int max) => MathEx.Lerp(min, max, (float)SystemRandom.NextDouble());
@@ -16,7 +16,7 @@ public static class RandomEx
     public static float Range(float min, float max) => Mathf.Lerp(min, max, (float)SystemRandom.NextDouble());
 
     /// <summary>ランダムにどちらかの値を返す</summary>
-    public static T Bool<T>(T a, T b) => Boolean ? a : b;
+    public static T Either<T>(T a, T b) => Bool ? a : b;
 
     /// <summary>ランダムに0 ～ 9のchar型の値を返す</summary>
     public static char Number() => (char)Range(CharEx.FirstNumber, CharEx.LastNumber);

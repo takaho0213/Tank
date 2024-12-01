@@ -4,13 +4,17 @@ using UnityEngine;
 using UnityEditor;
 #endif
 
-public class GenericJsonIOScript<T> : JsonIOScript where T : new()
+//#if UNITY_EDITOR
+//[UnityEditor.CustomEditor(typeof(クラス名), true)]
+//public class クラス名Editor : GenericJsonIOScriptEditor { }
+//#endif
+public abstract class GenericJsonIOScript<T> : JsonIOScript where T : new()
 {
     /// <summary>デシリアライズ化した値</summary>
-    [SerializeField] protected T value;
+    [SerializeField] protected T data;
 
     /// <summary>デシリアライズ化した値</summary>
-    public T Value { get => value; set => this.value = value; }
+    public virtual T Data { get => data; set => data = value; }
 
     protected override void Awake()
     {
@@ -20,7 +24,13 @@ public class GenericJsonIOScript<T> : JsonIOScript where T : new()
     }
 
     /// <summary>ロード</summary>
-    public T Load() => value = Load<T>();
+    public virtual T Load() => data = Load<T>();
+
+    /// <summary>セーブ</summary>
+    public virtual void Save(bool prettyPrint = true) => Save((object)data, prettyPrint);
+
+    /// <summary>セーブ</summary>
+    public virtual void Save(T value, bool prettyPrint = true) => Save((object)value, prettyPrint);
 
     public override TBase Load<TBase>()
     {
@@ -34,15 +44,9 @@ public class GenericJsonIOScript<T> : JsonIOScript where T : new()
         base.Save(data, prettyPrint);
     }
 
-    /// <summary>セーブ</summary>
-    public void Save(bool prettyPrint = true) => Save((object)value, prettyPrint);
-
-    /// <summary>セーブ</summary>
-    public void Save(T value, bool prettyPrint = true) => Save((object)value, prettyPrint);
-
 #if UNITY_EDITOR
     [CustomEditor(typeof(GenericJsonIOScript<>), true)]
-    public class GenericJsonIOScriptEditor : TextIOScriptEditor
+    public class GenericJsonIOScriptEditor : BaseIOScriptEditor
     {
         /// <summary>GenericJsonIOScriptの参照</summary>
         protected GenericJsonIOScript<T> jsonIO;
@@ -51,33 +55,33 @@ public class GenericJsonIOScript<T> : JsonIOScript where T : new()
 
         protected override void OnEnable()
         {
-            jsonIO = target as GenericJsonIOScript<T>;   //キャスト
+            jsonIO = target as GenericJsonIOScript<T>;                   //キャスト
 
-            jsonIO.File = new(jsonIO.FilePath);          //インスタンス化
-            jsonIO.Directory = new(jsonIO.DirectoryPath);//インスタンス化
+            jsonIO.File = new(jsonIO.FilePath);                          //インスタンス化
+            jsonIO.Directory = new(jsonIO.DirectoryPath);                //インスタンス化
 
-            base.OnEnable();                             //ベースのOnEnableを呼び出す
+            base.OnEnable();                                             //ベースのOnEnableを呼び出す
 
-            jsonIO.value = jsonIO.File.IsExists ? jsonIO.Load() : default;
+            jsonIO.data = jsonIO.File.IsExists ? jsonIO.Load() : default;//ファイルが存在していたら/ロードしたデータ:それ以外なら/defaultを代入
         }
 
         protected override void DataField()
         {
-            if (jsonIO.File.IsExists)                          //ファイルが存在しているなら
+            if (jsonIO.File.IsExists)                                                      //ファイルが存在しているなら
             {
-                EditorGUILayout.PropertyField(serializedObject.FindProperty(nameof(value)));//ファイルをデシリアライズ化した値のフィールドを表示
+                EditorGUILayout.PropertyField(serializedObject.FindProperty(nameof(data)));//ファイルをデシリアライズ化した値のフィールドを表示
             }
 
-            if (GUILayout.Button(nameof(Save)))                                             //セーブボタンを表示
+            if (GUILayout.Button(nameof(Save)))                                            //セーブボタンを表示
             {
-                jsonIO.Save();                                                              //セーブ
+                jsonIO.Save();                                                             //セーブ
 
-                OnEnable();                                                                 //リセット
+                OnEnable();                                                                //リセット
             }
 
-            EditorGUILayout.Space();                                                        //スペース
+            EditorGUILayout.Space();                                                       //スペースを表示
 
-            base.DataField();                                                               //ベースのDataFieldを呼び出す
+            base.DataField();                                                              //ベースのDataFieldを呼び出す
         }
     }
 #endif
