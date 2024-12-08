@@ -5,8 +5,6 @@ public class TankAutoMoveScript : TankMoveScript
     /// <summary></summary>
     public enum MoveType
     {
-        /// <summary>ñ≥Çµ</summary>
-        None,
         /// <summary>â°</summary>
         Horizontal,
         /// <summary>èc</summary>

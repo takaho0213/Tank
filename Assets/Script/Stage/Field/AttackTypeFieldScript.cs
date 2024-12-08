@@ -1,0 +1,1 @@
+public class AttackTypeFieldScript : SelectFieldScript<TankEnemyScript.AttackType> { }

@@ -1,38 +1,111 @@
 using UnityEngine;
+using System.Collections.Generic;
+using static TankAutoMoveScript;
+using static TankEnemyScript;
+using Unity.VisualScripting;
 
-public class TutorialGUIScript : MonoBehaviour
+public class TutorialGUIScript : MonoBehaviour//GUIWindowScript
 {
-    [SerializeField] private string text;
+    [SerializeField] GUIWindowScript guiWindow;
 
-    [SerializeField] private Vector2 pos;
+    [SerializeField] private Font font;
 
-    [SerializeField] private Vector2 size;
+    [SerializeField] private int labelFontSize;
+    [SerializeField] private int fieldFontSize;
 
-    private Rect windowRect;
+    [SerializeField] private float labelSpace;
+    [SerializeField] private float fieldSpace;
+
+    [SerializeField] private GUISelectField<int> health;
+    [SerializeField] private GUISelectField<MoveType> moveType;
+    [SerializeField] private GUISelectField<float> moveSpeed;
+    [SerializeField] private GUISelectField<bool> isMoveVectorNormalized;
+    [SerializeField] private GUISelectField<float> turretLerp;
+    [SerializeField] private GUISelectField<AttackType> attackType;
+    [SerializeField] private GUISelectField<float> shootInterval;
+    [SerializeField] private GUISelectField<float> bulletSpeed;
+    [SerializeField] private GUISelectField<int> bulletReflectionCount;
+    [SerializeField] private GUISelectField<Color> fillColor;
+
+    [SerializeField] private GUISliderField slider;
+    [SerializeField] private GUIIntSliderField intSlider;
+
+    private List<BaseGUIField> fields;
+
+    private Vector2 scroll;
+
+    private GUIStyle labelStyle;
+    private GUIStyle buttonStyle;
+    private GUIStyle sliderStyle;
 
     private void Start()
     {
-        var s = size / MathEx.TwoI;
+        fields = new List<BaseGUIField>
+        {
+            health,
+            moveType,
+            moveSpeed,
+            isMoveVectorNormalized,
+            turretLerp,
+            attackType,
+            shootInterval,
+            bulletSpeed,
+            bulletReflectionCount,
+            fillColor,
+            slider,
+            intSlider,
+        };
 
-        var fhd = VectorEx.FHD / MathEx.TwoI;
+        foreach (var field in fields)
+        {
+            field.Init();
+        }
 
-        windowRect.x = fhd.x + pos.x - s.y;
-        windowRect.y = fhd.y + pos.y - s.x;
-
-        windowRect.width = size.x;
-        windowRect.height = size.y;
+        guiWindow.Window += Window;
     }
 
     private void Window(int id)
     {
-        if (GUILayout.Button("Press me"))
+        if (labelStyle == null)
         {
+            labelStyle = new(GUI.skin.label)
+            {
+                font = font,
+                fontSize = labelFontSize,
+            };
 
+            buttonStyle = new(GUI.skin.button)
+            {
+                font = font,
+                fontSize = fieldFontSize,
+            };
+
+            sliderStyle = new(GUI.skin.horizontalSlider)
+            {
+                font = font,
+                fontSize = fieldFontSize,
+            };
+
+            foreach (var f in fields)
+            {
+                var fieldStyle = f switch
+                {
+                    _ => buttonStyle,
+                };
+
+                f.SetStyle(labelStyle, fieldStyle, labelSpace);
+            }
         }
-    }
 
-    private void OnGUI()
-    {
-        GUI.Window(default, windowRect, Window, text);
+        scroll = GUILayout.BeginScrollView(scroll);
+
+        foreach (var field in fields)
+        {
+            field.Field();
+
+            GUILayout.Space(fieldSpace);
+        }
+
+        GUILayout.EndScrollView();
     }
 }
