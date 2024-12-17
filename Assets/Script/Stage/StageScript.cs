@@ -32,9 +32,9 @@ public class StageScript : MonoBehaviour
 
         tankManager.Player.SetPosAndRot(playerPosAndRot);                          //場所と角度をセット
 
-        foreach (var info in enemyInfos)                               //EnemyInfosの要素数分繰り返す
+        foreach (var info in enemyInfos)                                     //EnemyInfosの要素数分繰り返す
         {
-            tankManager.GetEnemy.Invoke().SetInfo(info, tankManager.GetBullet, OnEnemyDeath);//エネミーの個体値をセットしアクティブ
+            tankManager.GetPoolEnemy.Invoke().SetInfo(info, tankManager.GetPoolBullet, OnEnemyDeath);//エネミーの個体値をセットしアクティブ
         }
     }
 
@@ -50,9 +50,9 @@ public class StageScript : MonoBehaviour
     /// <summary>ステージをクリア</summary>
     public void InActive()
     {
-        enemysDeathCount = default;                  //カウントをリセット
+        enemysDeathCount = default;  //カウントをリセット
 
-        stageObject.SetActive(false);                //オブジェクトを非アクティブ
+        stageObject.SetActive(false);//オブジェクトを非アクティブ
     }
 
     /// <summary>エネミーが倒された数をリセット</summary>

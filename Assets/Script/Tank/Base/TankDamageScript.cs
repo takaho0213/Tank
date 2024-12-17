@@ -63,9 +63,6 @@ public class TankDamageScript : MonoBehaviour
     /// <summary>体力をリセット</summary>
     public void HealthReSet() => health = maxHealth;//最大体力を代入
 
-    /// <summary>Healthを最大まで回復</summary>
-    public void HealthRecovery() => health = maxHealth;//体力に最大体力を代入
-
     /// <summary>死亡演出</summary>
     /// <param name="c">演出終了時実行するコールバック</param>
     public IEnumerator DeathEffect(UnityAction c)

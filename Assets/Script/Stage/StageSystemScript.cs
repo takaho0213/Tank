@@ -19,6 +19,8 @@ public class StageSystemScript : MonoBehaviour
 
     [SerializeField, LightColor] private StageManagerScript stageManager;
 
+    [SerializeField, LightColor] private MenuScript menu;
+
     [SerializeField, LightColor] private TutorialScript tutorial;
 
     /// <summary>フレームレート</summary>
@@ -34,7 +36,7 @@ public class StageSystemScript : MonoBehaviour
     private AudioInfoDictionary<StageClip> stageAudio;
 
     /// <summary>タンクが動けない状態か</summary>
-    public bool IsNotMove => eyecatch.IsNotMove　|| tutorial.IsNotMove || isNotMove;
+    public bool IsNotMove => title.IsRun || eyecatch.IsNotMove　|| tutorial.IsNotMove || isNotMove;
 
     private void Start()
     {
@@ -47,6 +49,14 @@ public class StageSystemScript : MonoBehaviour
         title.Init(OnReStartFadeIn, () => Fade(ActiveStage));
 
         tankManager.Init(OnPlayerDeath);                        //
+
+        tutorial.SetAction(() => isNotMove = false, () => isNotMove = true);
+
+        menu.AddOnClickBackTitleButton(() => title.FadeActive(new UnityAction(InActiveStage) + tutorial.OnQuit));
+
+        tankManager.Player.ReSetTank();
+
+        isNotMove = true;
     }
 
     /// <summary>リスタートのフェードイン時実行</summary>
@@ -92,9 +102,7 @@ public class StageSystemScript : MonoBehaviour
     {
         stageManager.ReSetStageCount();
 
-        stageAudio[StageClip.BGM].Stop();
-
-        title.OnGameClear(InActiveStage);
+        title.FadeActive(new UnityAction(InActiveStage) + tankManager.Player.ReSetTank);
     }
 
     /// <summary>Playerがリトライした際実行</summary>
@@ -160,5 +168,13 @@ public class StageSystemScript : MonoBehaviour
         tankManager.PlayerAddLife(stageManager.StageCount);//
 
         ActiveStage();                        //現在のステージを生成
+    }
+
+    private void Update()
+    {
+        if (!isNotMove && Input.GetKeyDown(KeyCode.Space))
+        {
+            menu.OpenOrClose();
+        }
     }
 }

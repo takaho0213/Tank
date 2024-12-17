@@ -7,6 +7,8 @@ public class TitleScript : GraphicFaderScript
 {
     [SerializeField, LightColor] private TutorialScript tutorial;
 
+    [SerializeField, LightColor] private MenuScript menu;
+
     /// <summary>タイトルオブジェクト</summary>
     [SerializeField, LightColor] private GameObject titleObj;
 
@@ -23,7 +25,7 @@ public class TitleScript : GraphicFaderScript
     {
         StageBGM = AudioScript.I.StageAudio[StageClip.BGM];
 
-        OnGameClear(null);                         //リスタート
+        FadeActive(null);                         //リスタート
 
         gameStartButton.onClick.AddListener(OnGameStart);
 
@@ -31,7 +33,7 @@ public class TitleScript : GraphicFaderScript
 
         gameQuitButton.onClick.AddListener(OnGameQuit);
 
-        tutorial.Init(OnGameClear);
+        menu.AddOnClickGameQuitButton(OnGameQuit);
     }
 
     public void Init(UnityAction onReStartFadeIn, UnityAction onReStartFadeOut)
@@ -41,9 +43,11 @@ public class TitleScript : GraphicFaderScript
     }
 
     /// <summary>リスタート時実行</summary>
-    public void OnGameClear(UnityAction c)
+    public void FadeActive(UnityAction c)
     {
         c += () => titleObj.SetActive(true);
+
+        StageBGM.Stop();
 
         Run(c, StageBGM.Play);//フェードを開始 フェードイン時ステージをアクティブ フェードアウト時BGMを再生
     }
@@ -51,9 +55,9 @@ public class TitleScript : GraphicFaderScript
     /// <summary>フェードイン時実行する関数</summary>
     private void OnFadeIn()
     {
-        titleObj.SetActive(false);     //タイトルをアクティブ
+        titleObj.SetActive(false);//タイトルをアクティブ
 
-        StageBGM.Stop();        //BGMを停止
+        StageBGM.Stop();          //BGMを停止
 
         onReStartFadeIn?.Invoke();//リスタートのフェードアウト時実行する関数を実行
     }

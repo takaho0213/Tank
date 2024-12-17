@@ -1,1 +1,2 @@
-public class AttackTypeButtonScript : SelectButton<TankEnemyScript.AttackType> { }
+/// <summary><see cref="AttackTypeFieldScript"/>‚Ìƒ{ƒ^ƒ“</summary>
+public class AttackTypeButtonScript : SelectButtonScript<TankEnemyScript.AttackType> { }

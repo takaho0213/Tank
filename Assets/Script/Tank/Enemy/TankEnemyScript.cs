@@ -38,31 +38,9 @@ public class TankEnemyScript : TankScript
     /// <param name="onDeath">死亡時に実行するコールバック</param>
     public void SetInfo(TankEnemyInfoScript info, System.Func<BulletScript> pool, System.Func<IEnumerator> onDeath)
     {
-        IsActive = true;                                  //アクティブ
-
-        autoMove.Stop();                                  //移動を停止
+        UpdateInfo(info);
 
         cannon.BulletPool = pool;                         //弾プール関数をセット
-
-        parts.SetInfo(info);                              //エネミーの情報をセット
-
-        damage.SetInfo(info);                             //エネミーの情報をセット
-
-        fillColor.SetInfo(info);                          //エネミーの情報をセット
-
-        line.SetLineColor(info.FillColor);                //エネミーの情報をセット
-
-        cannon.SetInfo(info);                             //エネミーの情報をセット
-
-        autoMove.SetInfo(info);                           //エネミーの情報をセット
-
-        line.Crear();                                     //弾道をリセット
-
-        SetPosAndRot(info.PosAndRot);                     //場所と角度をセット
-
-        cannon.ShootIntervalTime = info.ShootInterval;          //発射間隔をセット
-
-        attackType = info.AttackType;                           //攻撃タイプをセット
 
         base.onDeath = () =>                                   //死亡した再実行する関数をセット
         {
@@ -70,10 +48,37 @@ public class TankEnemyScript : TankScript
 
             stageSystem.StartCoroutine(onDeath.Invoke());//死亡時の処理を開始
         };
+    }
 
-        while (attackType == AttackType.Random)                                 //攻撃タイプがランダムな限り繰り返す
+    public void UpdateInfo(TankEnemyInfoScript info)
+    {
+        IsActive = true;                                    //アクティブ
+
+        line.Crear();                                       //弾道をリセット
+
+        autoMove.Stop();                                    //移動を停止
+
+        SetPosAndRot(info.PosAndRot);                       //場所と角度をセット
+
+        parts.SetInfo(info);                                //エネミーの情報をセット
+
+        damage.SetInfo(info);                               //エネミーの情報をセット
+
+        fillColor.SetInfo(info);                            //エネミーの情報をセット
+
+        line.SetLineColor(info.FillColor);                  //エネミーの情報をセット
+
+        cannon.SetInfo(info);                               //エネミーの情報をセット
+
+        autoMove.SetInfo(info);                             //エネミーの情報をセット
+
+        cannon.ShootIntervalTime = info.ShootInterval;      //発射間隔をセット
+
+        attackType = info.AttackType;                       //攻撃タイプをセット
+
+        while (attackType == AttackType.Random)             //攻撃タイプがランダムな限り繰り返す
         {
-            attackType = EnumEx<AttackType>.Values.Random();
+            attackType = EnumEx<AttackType>.Values.Random();//
         }
     }
 

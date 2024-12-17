@@ -1,5 +1,6 @@
 using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 
 public class StageTankManagerScript : MonoBehaviour
 {
@@ -12,18 +13,26 @@ public class StageTankManagerScript : MonoBehaviour
     /// <summary>弾のプールリスト</summary>
     [SerializeField] private PoolList<BulletScript> bulletList;
 
+    /// <summary>プレイヤータンク</summary>
     public TankPlayerScript Player => player;
 
-    public System.Func<TankEnemyScript> GetEnemy { get; private set; }
+    /// <summary>プールされている非アクティブな敵タンクを取得する関数</summary>
+    public System.Func<TankEnemyScript> GetPoolEnemy { get; private set; }
 
-    public System.Func<BulletScript> GetBullet { get; private set; }
+    /// <summary>プールされている非アクティブな弾を取得する関数</summary>
+    public System.Func<BulletScript> GetPoolBullet { get; private set; }
 
+    /// <summary>プールされている敵タンクのリスト</summary>
+    public IReadOnlyList<TankEnemyScript> PoolEnemyList => enemyList;
+
+    /// <summary></summary>
+    /// <param name="onPlayerDeath"></param>
     public void Init(System.Func<bool, IEnumerator> onPlayerDeath)
     {
-        GetEnemy = enemyList.GetObject;
-        GetBullet = bulletList.GetObject;
+        GetPoolEnemy = enemyList.GetObject;       //
+        GetPoolBullet = bulletList.GetObject;     //
 
-        player.Init(GetBullet, onPlayerDeath);                        //プレイヤーの関数をセット
+        player.Init(GetPoolBullet, onPlayerDeath);//プレイヤーの関数をセット
     }
 
     public void PlayerAddLife(int stageCount)

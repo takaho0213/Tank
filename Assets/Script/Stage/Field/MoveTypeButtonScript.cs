@@ -1,1 +1,2 @@
-public class MoveTypeButtonScript : SelectButton<TankAutoMoveScript.MoveType> { }//AttackTypeButtonScript
+/// <summary><see cref="MoveTypeFieldScript"/>‚Ìƒ{ƒ^ƒ“</summary>
+public class MoveTypeButtonScript : SelectButtonScript<TankAutoMoveScript.MoveType> { }

@@ -1,51 +1,38 @@
-using System.Collections;
 using UnityEngine;
 using UnityEngine.Events;
-using UnityEngine.UI;
+using System.Collections;
 
 public class TutorialScript : MonoBehaviour
 {
-    [SerializeField, LightColor] private GameObject Obj;
-
     [SerializeField, LightColor] private FaderScript fader;
 
     [SerializeField, LightColor] private StageEyeCatchUIScript stageEyeCatchUI;
 
-    [SerializeField, LightColor] private StageManagerScript stageManager;
-
     [SerializeField, LightColor] private StageTankManagerScript tankManager;
 
-    [SerializeField, LightColor] private Button QuitButton;
-
-    [SerializeField, LightColor] private Transform playerInit;
-
     [SerializeField, LightColor] private StageScript stage;
+
+    [SerializeField, LightColor] private MenuScript menu;
+
+    [SerializeField, LightColor] private TutorialMenuScript tutorialMenu;
 
     [SerializeField] private string stageCountText;
 
     public bool IsNotMove { get; private set; }
 
-    private UnityAction<UnityAction> onQuit;
+    private UnityAction onStart;
+    private UnityAction onEnd;
 
-    private void Start()
+    public void SetAction(UnityAction start, UnityAction end)
     {
-        QuitButton.onClick.AddListener(() =>
-        {
-            if (fader.IsRun) return;
+        onStart = start;
+        onEnd = end;
 
-            onQuit?.Invoke(OnQuit);
-        });
-    }
-
-    public void Init(UnityAction<UnityAction> onQuit)
-    {
-        this.onQuit = onQuit;
+        onStart += () => IsNotMove = false;
     }
 
     public void OnFadeIn()
     {
-        Obj.SetActive(true);
-
         IsNotMove = true;
 
         stageEyeCatchUI.Display();
@@ -55,11 +42,13 @@ public class TutorialScript : MonoBehaviour
         stageEyeCatchUI.SetStageCount(stageCountText);
 
         stage.Active(tankManager, OnAllEnemysDeath);
+
+        tutorialMenu.IsActive = true;
     }
 
     public void OnFadeOut()
     {
-        stageEyeCatchUI.Fader.Run(null, () => IsNotMove = false);
+        stageEyeCatchUI.Fader.Run(null, onStart);
     }
 
     private IEnumerator OnAllEnemysDeath()
@@ -67,12 +56,16 @@ public class TutorialScript : MonoBehaviour
         yield break;
     }
 
-    private void OnQuit()
+    public void OnQuit()
     {
+        if (!tutorialMenu.IsActive) return;
+
         tankManager.InActive();
 
         stage.InActive();
 
-        Obj.SetActive(false);
+        onEnd?.Invoke();
+
+        tutorialMenu.IsActive = false;
     }
 }

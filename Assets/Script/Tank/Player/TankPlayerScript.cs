@@ -13,12 +13,13 @@ public class TankPlayerScript : TankScript
     /// <summary>メインカメラ</summary>
     [SerializeField, LightColor] private Camera mainCamera;
 
+    /// <summary>ライフ</summary>
     public TankLifeScript Life => life;
 
     protected override TankMoveScript BaseMove => inputMove;
 
     /// <summary>体力を最大まで回復</summary>
-    public void HealthRecovery() => damage.HealthRecovery();//体力を1回復
+    public void HealthRecovery() => damage.HealthReSet();
 
     /// <summary>(プール弾, リトライ, ゲームオーバー)関数をセット</summary>
     /// <param name="pool">プールしてある弾を取得する関数</param>
@@ -40,27 +41,31 @@ public class TankPlayerScript : TankScript
         life.ReMoveLife();   //ライフが0以上なら/ライフを - 1
     }
 
-    /// <summary>リスタート</summary>
-    public void ReStart()
+    public void ReSetTank()
     {
         damage.HealthReSet();//体力をリセット
 
         fillColor.SetColor();//色をセット
 
-        life.ReSetLife();    //ライフをリセット
+        life.ReSetLife();
     }
 
-    /// <summary>処理をまとめた関数</summary>
+    /// <summary>リスタート</summary>
+    public void ReStart()
+    {
+        fillColor.SetColor();//色をセット
+    }
+
     protected override void Move()
     {
-        line.CreateLine();
+        line.CreateLine();                                                                     //ラインを生成
 
         parts.TargetLookAt(Input.mousePosition - mainCamera.WorldToScreenPoint(inputMove.Pos));//マウスカーソルの方向へタレットを向ける
 
         inputMove.InputMove();                                                                 //入力移動
 
-        if (Input.GetMouseButton(default) && cannon.IsShoot) cannon.Shoot();                    //右クリック かつ 発射間隔なら/発射する
+        if (Input.GetMouseButton(default) && cannon.IsShoot) cannon.Shoot();                   //右クリック かつ 発射間隔なら/発射する
 
-        base.Move();
+        base.Move();                                                                           //ベースのMove関数を呼び出す
     }
 }

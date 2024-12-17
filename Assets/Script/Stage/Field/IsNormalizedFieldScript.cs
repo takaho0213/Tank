@@ -1,1 +1,1 @@
-public class IsNormalizedFieldScript : SelectFieldScript<bool> { }//IsNormalizedButtonScript
+public class IsNormalizedFieldScript : SelectFieldScript<bool> { }
