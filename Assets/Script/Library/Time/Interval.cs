@@ -4,13 +4,17 @@ using UnityEngine;
 [System.Serializable]
 public class Interval : IInterval
 {
+    /// <summary>実行時間</summary>
     private static float TIME => UnityEngine.Time.time;
+    /// <summary>デルタタイム</summary>
     private static float DELTATIME => UnityEngine.Time.deltaTime;
 
     /// <summary>時間</summary>
     [SerializeField] private float time;
+
     /// <summary>自動でリセットするか</summary>
     [SerializeField] private bool isAutoReSet;
+
     /// <summary>ストップ中か</summary>
     [SerializeField] private bool isStop;
 

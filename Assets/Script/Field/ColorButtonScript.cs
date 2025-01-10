@@ -21,8 +21,8 @@ public class ColorButtonScript : MonoBehaviour
     /// <summary>ボタンがクリックされた際、実行する関数</summary>
     private UnityAction<Color> onClick;
 
-    /// <summary></summary>
-    /// <param name="onClick"></param>
+    /// <summary>初期化</summary>
+    /// <param name="onClick">ボタンがクリックされた際、実行する関数</param>
     public void Init(UnityAction<Color> onClick)
     {
         colorTMP.text = colorName;          //カラー名を代入

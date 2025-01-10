@@ -2,70 +2,64 @@ using UnityEngine;
 using UnityEngine.Events;
 using System.Collections;
 
+/// <summary>チュートリアル</summary>
 public class TutorialScript : MonoBehaviour
 {
-    [SerializeField, LightColor] private FaderScript fader;
-
+    /// <summary>アイキャッチ</summary>
     [SerializeField, LightColor] private StageEyeCatchUIScript stageEyeCatchUI;
 
+    /// <summary>タンクの管理者</summary>
     [SerializeField, LightColor] private StageTankManagerScript tankManager;
 
+    /// <summary>ステージ</summary>
     [SerializeField, LightColor] private StageScript stage;
 
-    [SerializeField, LightColor] private MenuScript menu;
-
+    /// <summary>チュートリアルのメニュー</summary>
     [SerializeField, LightColor] private TutorialMenuScript tutorialMenu;
 
-    [SerializeField] private string stageCountText;
+    /// <summary>ステージ名</summary>
+    [SerializeField] private string stageName;
 
-    public bool IsNotMove { get; private set; }
-
+    /// <summary>スタートした際実行する関数</summary>
     private UnityAction onStart;
-    private UnityAction onEnd;
 
-    public void SetAction(UnityAction start, UnityAction end)
-    {
-        onStart = start;
-        onEnd = end;
+    /// <summary>スタートした際実行する関数をセット</summary>
+    /// <param name="onStart">スタートした際実行する関数</param>
+    public void SetOnStartAction(UnityAction onStart) => this.onStart = onStart;
 
-        onStart += () => IsNotMove = false;
-    }
-
+    /// <summary>フェードインした際の処理</summary>
     public void OnFadeIn()
     {
-        IsNotMove = true;
+        stageEyeCatchUI.Display();                  //UIを表示
 
-        stageEyeCatchUI.Display();
+        tankManager.Player.ReStart();               //プレイヤーをリスタート
 
-        tankManager.Player.ReStart();
+        stageEyeCatchUI.SetStageCount(stageName);   //ステージ名をセット
 
-        stageEyeCatchUI.SetStageCount(stageCountText);
+        stage.Active(tankManager, OnAllEnemysDeath);//ステージをアクティブ
 
-        stage.Active(tankManager, OnAllEnemysDeath);
-
-        tutorialMenu.IsActive = true;
+        tutorialMenu.IsActive = true;               //チュートリアルメニューをアクティブ
     }
 
+    /// <summary>フェードアウトした際の処理</summary>
     public void OnFadeOut()
     {
-        stageEyeCatchUI.Fader.Run(null, onStart);
+        stageEyeCatchUI.Fader.Run(null, onStart);//アイキャッチのフェードを開始
     }
 
+    /// <summary>すべての敵タンクを倒した際の処理</summary>
     private IEnumerator OnAllEnemysDeath()
     {
         yield break;
     }
 
+    /// <summary>チュートリアル終了時の処理</summary>
     public void OnQuit()
     {
-        if (!tutorialMenu.IsActive) return;
+        tankManager.InActive();       //タンクを非アクティブ
 
-        tankManager.InActive();
+        stage.InActive();             //ステージを非アクティブ
 
-        stage.InActive();
-
-        onEnd?.Invoke();
-
-        tutorialMenu.IsActive = false;
+        tutorialMenu.IsActive = false;//チュートリアルメニューを非アクティブ
     }
 }

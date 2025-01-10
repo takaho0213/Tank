@@ -1,3 +1,5 @@
+# if UNITY_EDITOR
+
 using System.Linq;
 using System.Collections.Generic;
 using UnityEngine;
@@ -38,3 +40,5 @@ public class DebugScript : MonoBehaviour
         if (Input.GetMouseButtonDown(2)) Debug.Log($"ヒットした全てのオブジェクト => {string.Join(", ", RayAll().Select((v) => v.gameObject.name))}");
     }
 }
+
+# endif

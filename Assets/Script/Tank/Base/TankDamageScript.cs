@@ -6,6 +6,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.Events;
 
+/// <summary>タンクのダメージ処理</summary>
 public class TankDamageScript : MonoBehaviour
 {
     /// <summary>赤の体力ゲージ</summary>
@@ -17,6 +18,7 @@ public class TankDamageScript : MonoBehaviour
     /// <summary>死亡した際のエフェクトオブジェクト</summary>
     [SerializeField, LightColor] private GameObject deathEffectObj;
 
+    /// <summary>ダメージUI</summary>
     [SerializeField, LightColor] private TankDamageUIScript damageUI;
 
     /// <summary>被弾SEを再生するAudioSource</summary>
@@ -34,11 +36,11 @@ public class TankDamageScript : MonoBehaviour
     /// <summary>最大体力</summary>
     private int health;
 
-    /// <summary>エフェクト表示時間</summary>
-    private WaitForSeconds effectWait;
-
     /// <summary>ダメージを受けない状態か</summary>
     private bool isNoDamage;
+
+    /// <summary>エフェクト表示時間</summary>
+    private WaitForSeconds effectWait;
 
     /// <summary>体力が0になった際実行</summary>
     public UnityAction OnHealthGone { get; set; }
@@ -48,7 +50,7 @@ public class TankDamageScript : MonoBehaviour
 
     private void Awake()
     {
-        effectWait = new(AudioScript.I.TankAudio[TankClip.Explosion].Length);
+        effectWait = new(AudioScript.I.TankAudio[TankClip.Explosion].Length);//インスタンス化
     }
 
     /// <summary>エネミーの情報をセット</summary>
@@ -67,13 +69,13 @@ public class TankDamageScript : MonoBehaviour
     /// <param name="c">演出終了時実行するコールバック</param>
     public IEnumerator DeathEffect(UnityAction c)
     {
-        deathEffectObj.SetActive(true);                                                                //死亡エフェクトをアクティブ
+        deathEffectObj.SetActive(true); //死亡エフェクトをアクティブ
 
-        yield return effectWait;//待機
+        yield return effectWait;        //待機
 
-        deathEffectObj.SetActive(false);                                                               //死亡エフェクトを非アクティブ
+        deathEffectObj.SetActive(false);//死亡エフェクトを非アクティブ
 
-        c?.Invoke();                                                                                   //コールバックを実行
+        c?.Invoke();                    //コールバックを実行
     }
 
     /// <summary>ダメージ処理</summary>
@@ -101,7 +103,7 @@ public class TankDamageScript : MonoBehaviour
 
                 clip.PlayOneShot(damageSource);                     //ダメージSEを再生
 
-                yield return damage.Invoke(clip.Length);       //ダメージ演出
+                yield return damage.Invoke(clip.Length);            //ダメージ演出
 
                 isNoDamage = false;                                 //ダメージを受けない状態かをfalse
             }
@@ -111,6 +113,6 @@ public class TankDamageScript : MonoBehaviour
     /// <summary>体力バーを更新</summary>
     public void UpdateHealthGauge()
     {
-        damageUI.SetHealthGauge(health / (float)maxHealth);
+        damageUI.SetHealthGauge(health / (float)maxHealth);//体力の割合を体力のゲージにセット
     }
 }

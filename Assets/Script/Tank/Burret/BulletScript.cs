@@ -4,8 +4,10 @@ using System.Collections;
 /// <summary>タンクの弾</summary>
 public class BulletScript : MonoBehaviour
 {
+    /// <summary>エフェクト</summary>
     [SerializeField, LightColor] private BulletEffectScript effect;
 
+    /// <summary>反射</summary>
     [SerializeField, LightColor] private BulletReflectScript reflect;
 
     /// <summary>全体オブジェクト</summary>
@@ -33,25 +35,13 @@ public class BulletScript : MonoBehaviour
         private set => obj.SetActive(value);
     }
 
-    /// <summary>非アクティブ</summary>
-    public void Inactive()
-    {
-        IsActive = false;              //非アクティブ
-
-        effect.IsActive = false;       //爆発エフェクトオブジェクトを非アクティブ
-
-        bodyObj.SetActive(true);       //弾オブジェクトをアクティブ
-
-        reflect.ReSetReflectionCount();//
-    }
-
     private void OnTriggerEnter2D(Collider2D hit)
     {
         if (!Info.IsDamage(hit)) return;             //ダメージを受けなければ/終了
 
         if (reflect.IsReflection(hit))               //反射できるなら
         {
-            ribo.velocity = reflect.Reflection(ribo);//
+            ribo.velocity = reflect.Reflection(ribo);//反射ベクトルを代入
 
             trafo.up = ribo.velocity.normalized;     //移動ベクトルを代入
 
@@ -60,32 +50,21 @@ public class BulletScript : MonoBehaviour
 
         StartCoroutine(ExplosionEffect());           //爆発エフェクトを開始
     }
-    /// <summary>非アクティブにするする際のエフェクト</summary>
-    private IEnumerator ExplosionEffect()
-    {
-        ribo.velocity = Vector2.zero;         //移動ベクトルを(0, 0)にする
-
-        bodyObj.SetActive(false);             //弾オブジェクトを非アクティブ
-
-        yield return effect.ExplosionEffect();//爆発エフェクトを表示
-
-        Inactive();                           //非アクティブ
-    }
 
     /// <summary>弾を発射</summary>
     /// <param name="info">発射する際の情報</param>
     public void Shoot(BulletInfo info)
     {
-        Init(info);                           //
+        Setnfo(info);                         //情報をセット
 
         IsActive = true;                      //アクティブ
 
         ribo.velocity = trafo.up * info.Speed;//方向 * 弾速を代入
     }
 
-    /// <summary></summary>
-    /// <param name="info"></param>
-    private void Init(BulletInfo info)
+    /// <summary>情報をセット</summary>
+    /// <param name="info">情報</param>
+    private void Setnfo(BulletInfo info)
     {
         Info = info;                    //情報を代入
 
@@ -93,7 +72,7 @@ public class BulletScript : MonoBehaviour
 
         effect.JetSetActive(info.Speed);//ジェットエフェクトのアクティブ状態をセット
 
-        reflect.Init(info);             //
+        reflect.Init(info);             //初期化
 
         var t = info.GenerateInfo;      //初期位置と角度
 
@@ -104,5 +83,29 @@ public class BulletScript : MonoBehaviour
         {
             s.color = info.Color;       //弾の色を代入
         }
+    }
+
+    /// <summary>非アクティブ</summary>
+    public void Inactive()
+    {
+        IsActive = false;              //非アクティブ
+
+        effect.IsActive = false;       //爆発エフェクトオブジェクトを非アクティブ
+
+        bodyObj.SetActive(true);       //弾オブジェクトをアクティブ
+
+        reflect.ReSetReflectionCount();//反射数をリセット
+    }
+
+    /// <summary>非アクティブにするする際のエフェクト</summary>
+    private IEnumerator ExplosionEffect()
+    {
+        ribo.velocity = Vector2.zero;         //移動ベクトルを(0, 0)にする
+
+        bodyObj.SetActive(false);             //弾オブジェクトを非アクティブ
+
+        yield return effect.ExplosionEffect();//爆発エフェクトを表示
+
+        Inactive();                           //非アクティブ
     }
 }

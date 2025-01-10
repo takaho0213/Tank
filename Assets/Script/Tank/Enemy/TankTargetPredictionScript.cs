@@ -1,5 +1,6 @@
 using UnityEngine;
 
+/// <summary>ターゲットの位置予測</summary>
 public class TankTargetPredictionScript : MonoBehaviour
 {
     /// <summary>ターゲットのトランスフォーム</summary>

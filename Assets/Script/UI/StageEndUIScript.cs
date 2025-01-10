@@ -2,7 +2,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using System.Collections;
 
-/// <summary></summary>
+/// <summary>UIのタイプ</summary>
 public enum UI
 {
     /// <summary>クリア</summary>

@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.Events;
 
+/// <summary>タンクのライフ</summary>
 public class TankLifeScript : MonoBehaviour
 {
     /// <summary>残りライフ</summary>
@@ -14,17 +15,18 @@ public class TankLifeScript : MonoBehaviour
     /// <returns>残機を増やすか</returns>
     public bool IsAddLife(int stageCount) => stageCount % addLifeCount == default;
 
+    /// <summary>ステージのオーディオを再生する関数</summary>
     private UnityAction<StageClip> audioPlayer;
 
     private void Start()
     {
-        audioPlayer = AudioScript.I.StageAudio.Play;
+        audioPlayer = AudioScript.I.StageAudio.Play;//ステージのオーディオを再生する関数を代入
     }
 
     /// <summary>残機を1増やす</summary>
     public void AddLife()
     {
-        LifeCount++;                                          //ライフを + 1
+        LifeCount++;                           //ライフを + 1
 
         audioPlayer?.Invoke(StageClip.LifeAdd);//ライフ追加SEを再生
     }
@@ -32,17 +34,17 @@ public class TankLifeScript : MonoBehaviour
     /// <summary>残機を1減らす</summary>
     public void ReMoveLife()
     {
-        if (LifeCount > default(int))                                //ライフが0より上なら
+        if (LifeCount > default(int))                 //ライフが0より上なら
         {
-            LifeCount--;                                             //ライフを - 1
+            LifeCount--;                              //ライフを - 1
 
             audioPlayer?.Invoke(StageClip.LifeReMove);//ライフ減少SEを再生
         }
     }
 
-    /// <summary></summary>
+    /// <summary>ライフをリセット</summary>
     public void ReSetLife()
     {
-        LifeCount = default;
+        LifeCount = default;//ライフ数をリセット
     }
 }

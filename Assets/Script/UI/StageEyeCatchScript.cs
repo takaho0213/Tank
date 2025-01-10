@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.Events;
 
+/// <summary>ステージのアイキャッチ</summary>
 public class StageEyeCatchScript : MonoBehaviour
 {
     /// <summary>アイキャッチ</summary>
@@ -18,7 +19,7 @@ public class StageEyeCatchScript : MonoBehaviour
     /// <summary>BGMのInfo</summary>
     private AudioInfo audioBGM;
 
-    /// <summary></summary>
+    /// <summary>フェーダー</summary>
     public GraphicsFaderScript Fader => eyecatchUI.Fader;
 
     /// <summary>タンクが動けない状態か</summary>
@@ -26,11 +27,11 @@ public class StageEyeCatchScript : MonoBehaviour
 
     private void Start()
     {
-        stageStartWaitInterval = new(time: staegStartWaitTime);
+        stageStartWaitInterval = new(time: staegStartWaitTime);            //インスタンス化
 
-        playEyeCatchSE = AudioScript.I.StageAudio[StageClip.EyeCatch].Play;
+        playEyeCatchSE = AudioScript.I.StageAudio[StageClip.EyeCatch].Play;//アイキャッチSEを再生する関数を代入
 
-        audioBGM = AudioScript.I.StageAudio[StageClip.BGM];
+        audioBGM = AudioScript.I.StageAudio[StageClip.BGM];                //BGMオーディオ
     }
 
     /// <summary>アイキャッチをフェードする関数</summary>
@@ -38,9 +39,9 @@ public class StageEyeCatchScript : MonoBehaviour
     /// <param name="o">フェードアウト時実行する関数</param>
     public void Fade(UnityAction i, UnityAction o)
     {
-        audioBGM.Stop();                        //BGMを停止
+        audioBGM.Stop();                                //BGMを停止
 
-        i += playEyeCatchSE;                           //アイキャッチSEを再生する関数を加算代入
+        i += playEyeCatchSE;                            //アイキャッチSEを再生する関数を加算代入
 
         Fader.Run(i + playEyeCatchSE, o + OnStageStart);//フェード開始 フェードインした際引数の関数を実行
     }

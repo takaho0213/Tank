@@ -41,13 +41,14 @@ public class TankPlayerScript : TankScript
         life.ReMoveLife();   //ライフが0以上なら/ライフを - 1
     }
 
+    /// <summary>タンクをリセット</summary>
     public void ReSetTank()
     {
         damage.HealthReSet();//体力をリセット
 
         fillColor.SetColor();//色をセット
 
-        life.ReSetLife();
+        life.ReSetLife();    //ライフを0にする
     }
 
     /// <summary>リスタート</summary>

@@ -1,8 +1,9 @@
 using UnityEngine;
 
+/// <summary>タンクの自動移動</summary>
 public class TankAutoMoveScript : TankMoveScript
 {
-    /// <summary></summary>
+    /// <summary>移動タイプ</summary>
     public enum MoveType
     {
         /// <summary>横</summary>
@@ -26,26 +27,28 @@ public class TankAutoMoveScript : TankMoveScript
     /// <summary>ランダムに速度を返す</summary>
     private float RandomSpeed => Random.Range(-moveSpeed, moveSpeed);
 
+    /// <summary>横のランダムベクトル</summary>
     private Vector2 Horizontal => new(RandomSpeed, default);//(ランダム速度, 0)
 
+    /// <summary>縦のランダムベクトル</summary>
     private Vector2 Vertical => new(default, RandomSpeed);//(0, ランダム速度)
 
-    /// <summary>移動ベクトルの雛形</summary>
+    /// <summary>移動ベクトル</summary>
     private Vector2 MoveVector
     {
         get
         {
-            var type = this.type;
+            var type = this.type;                                                       //タイプ
 
-            if (type == MoveType.Random) type = EnumEx<MoveType>.Values.Random();
+            if (type == MoveType.Random) type = EnumEx<MoveType>.Values.Random();       //タイプがランダムならランダムなタイプを代入
 
             return type switch                                                          //タイプで分岐
             {
-                MoveType.Horizontal            => Horizontal,                           //
-                MoveType.Vertical              => Vertical,                             //
-                MoveType.HorizontalOrVertical  => RandomEx.Bool ? Horizontal : Vertical,//
-                MoveType.HorizontalAndVertical => Horizontal + Vertical,                //
-                MoveType.Random                => MoveVector,                           //
+                MoveType.Horizontal            => Horizontal,                           //横のランダムベクトル
+                MoveType.Vertical              => Vertical,                             //縦のランダムベクトル
+                MoveType.HorizontalOrVertical  => RandomEx.Bool ? Horizontal : Vertical,//横 or 縦のランダムベクトル
+                MoveType.HorizontalAndVertical => Horizontal + Vertical,                //横 and 縦のランダムベクトル
+                MoveType.Random                => MoveVector,                           //再起
                 _                              => default,                              //(0, 0)
             };
         }
@@ -59,7 +62,7 @@ public class TankAutoMoveScript : TankMoveScript
         moveSpeed = i.MoveSpeed;                    //移動速度をセット
         isNormalized = i.IsMoveVectorNormalized;    //移動ベクトルを正規化するかをセット
 
-        seInterval.Time = moveSE.Length / moveSpeed;//
+        seInterval.Time = moveSE.Length / moveSpeed;//SEのインターバルを代入
     }
 
     /// <summary>移動ベクトルを変更</summary>

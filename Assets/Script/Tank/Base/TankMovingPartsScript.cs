@@ -1,5 +1,6 @@
 using UnityEngine;
 
+/// <summary>タンクの移動部位</summary>
 public class TankMovingPartsScript : MonoBehaviour
 {
     /// <summary>タレットのTransform</summary>
@@ -17,6 +18,7 @@ public class TankMovingPartsScript : MonoBehaviour
     /// <summary>タレットとキャタピラのRotationをセット</summary>
     public Quaternion SetRotation { set => caterpillar.rotation = turret.rotation = value; }
 
+    /// <summary>タレットのForward</summary>
     public Vector2 TurretForward => turret.forward;
 
     /// <summary>エネミーの情報をセット</summary>

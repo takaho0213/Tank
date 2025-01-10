@@ -38,11 +38,11 @@ public class TankEnemyScript : TankScript
     /// <param name="onDeath">死亡時に実行するコールバック</param>
     public void SetInfo(TankEnemyInfoScript info, System.Func<BulletScript> pool, System.Func<IEnumerator> onDeath)
     {
-        UpdateInfo(info);
+        UpdateInfo(info);                                 //情報を更新
 
         cannon.BulletPool = pool;                         //弾プール関数をセット
 
-        base.onDeath = () =>                                   //死亡した再実行する関数をセット
+        base.onDeath = () =>                              //死亡した再実行する関数をセット
         {
             IsActive = false;                             //非アクティブ
 
@@ -50,6 +50,8 @@ public class TankEnemyScript : TankScript
         };
     }
 
+    /// <summary>情報を更新</summary>
+    /// <param name="info">情報</param>
     public void UpdateInfo(TankEnemyInfoScript info)
     {
         IsActive = true;                                    //アクティブ
@@ -78,7 +80,7 @@ public class TankEnemyScript : TankScript
 
         while (attackType == AttackType.Random)             //攻撃タイプがランダムな限り繰り返す
         {
-            attackType = EnumEx<AttackType>.Values.Random();//
+            attackType = EnumEx<AttackType>.Values.Random();//ランダムな攻撃タイプを代入
         }
     }
 
@@ -91,53 +93,60 @@ public class TankEnemyScript : TankScript
     /// <summary>レイがヒット かつ ターゲットと一致か</summary>
     private bool Ray() => search.Ray(prediction.TargetPos);//レイがヒット かつ ターゲットと一致なら
 
+    /// <summary>通常攻撃</summary>
     private bool AttackNormal()
     {
-        LookAt();
+        LookAt();   //タレットをターゲットの方向に向ける
 
-        return true;
+        return true;//trueを返す
     }
 
+    /// <summary>偏差攻撃</summary>
     private bool AttackDeviation()
     {
-        Vector2 pos = prediction.PredictionPos(autoMove.Pos, cannon.BulletSpeed);//
+        Vector2 pos = prediction.PredictionPos(autoMove.Pos, cannon.BulletSpeed);//移動予測先を代入
 
-        parts.TargetLookAt(pos - autoMove.Pos);                                  //
+        parts.TargetLookAt(pos - autoMove.Pos);                                  //タレットを移動予測先に向ける
 
-        return true;
+        return true;                                                             //trueを返す
     }
 
+    /// <summary>ターゲット攻撃</summary>
+    /// <returns>レイがヒットしたか</returns>
     private bool AttackTarget()
     {
-        LookAt();    //
+        LookAt();    //タレットをターゲットの方向に向ける
 
-        return Ray();//
+        return Ray();//レイがヒットしたか
     }
 
+    /// <summary>反射攻撃</summary>
+    /// <returns>射線上 or 反射する射線上にターゲットがいるか</returns>
     private bool AttackReflection()
     {
-        if (Ray())                          //
+        if (Ray())                          //レイがヒットしたら
         {
-            LookAt();                       //
+            LookAt();                       //タレットをターゲットの方向に向ける
 
-            return true;                    //
+            return true;                    //trueを返す
         }
 
-        parts.TargetLookAt(search.Rotate());//
+        parts.TargetLookAt(search.Rotate());//タレットをサーチする方向に向ける
 
-        return search.ReflectionRay();      //
+        return search.ReflectionRay();      //反射するレイがヒットしたか
     }
 
-    private bool AttackMove() => attackType switch
+    /// <summary>攻撃する際の処理</summary>
+    /// <returns>攻撃するか？</returns>
+    private bool AttackMove() => attackType switch  //攻撃タイプで分岐
     {
-        AttackType.Normal     => AttackNormal(),
-        AttackType.Deviation  => AttackDeviation(),
-        AttackType.Target     => AttackTarget(),
-        AttackType.Reflection => AttackReflection(),
-        _ => default,
+        AttackType.Normal     => AttackNormal(),    //タイプが通常攻撃      なら/通常攻撃
+        AttackType.Deviation  => AttackDeviation(), //タイプが偏差攻撃      なら/偏差攻撃
+        AttackType.Target     => AttackTarget(),    //タイプがターゲット攻撃なら/ターゲット攻撃
+        AttackType.Reflection => AttackReflection(),//タイプが反射攻撃      なら/反射攻撃
+        _ => default,                               //それ以外              なら/default値
     };
 
-    /// <summary>処理をまとめた関数</summary>
     protected override void Move()
     {
         if (AttackMove() && cannon.IsShoot)//発射間隔を越えていたら
@@ -149,13 +158,13 @@ public class TankEnemyScript : TankScript
 
         prediction.UpdatePreviousPos();    //ターゲット位置を更新
 
-        base.Move();                       //
+        base.Move();                       //ベースを呼び出す
     }
 
     protected override void NotMove()
     {
         cannon.ReSetShootInterval();//インターバルをリセット
 
-        base.NotMove();
+        base.NotMove();             //ベースを呼び出す
     }
 }

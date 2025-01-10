@@ -1,4 +1,3 @@
-using Unity.Burst.CompilerServices;
 using UnityEngine;
 using UnityEngine.Events;
 
@@ -49,13 +48,13 @@ public abstract class TankScript : MonoBehaviour
     {
         fillColor.SetColor();              //色をセット
 
-        line.Init(fillColor.Color);        //
+        line.Init(fillColor.Color);        //初期化
 
         damage.OnHealthGone = OnHealthGone;//体力が0になった際実行する関数をセット
 
-        BaseMove.Init();
+        BaseMove.Init();                   //初期化
 
-        cannon.Init();
+        cannon.Init();                     //初期化
     }
 
     protected virtual void OnTriggerEnter2D(Collider2D hit)
@@ -69,10 +68,10 @@ public abstract class TankScript : MonoBehaviour
     /// <param name="trafo">セットするpositionとrotation</param>
     public void SetPosAndRot(Transform trafo)
     {
-        this.trafo.position = trafo.position;   //位置を代入
-        parts.SetRotation = trafo.rotation;//角度を代入
+        this.trafo.position = trafo.position;//位置を代入
+        parts.SetRotation = trafo.rotation;  //角度を代入
 
-        line.Crear();
+        line.Crear();                        //ラインをクリア
     }
 
     /// <summary>Healthが0になった際実行</summary>
@@ -80,35 +79,38 @@ public abstract class TankScript : MonoBehaviour
     {
         fillColor.SetGray();                        //色をグレーにする
 
-        line.Crear();
+        line.Crear();                               //ラインをクリア
 
         StartCoroutine(damage.DeathEffect(onDeath));//死亡演出を開始
     }
 
+    /// <summary>移動出来る状態の際実行する関数</summary>
     protected virtual void Move()
     {
-        line.CreateLine();
+        line.CreateLine();//ラインを作成
     }
 
+    /// <summary>移動出来ない状態の際実行する関数</summary>
     protected virtual void NotMove()
     {
-        BaseMove.Stop();
+        BaseMove.Stop();//移動を停止
     }
 
+    /// <summary>常に実行される関数</summary>
     protected virtual void Always()
     {
-        damage.UpdateHealthGauge();            //体力バーを更新
+        damage.UpdateHealthGauge();                //体力バーを更新
 
         parts.CaterpillarLookAt(BaseMove.Velocity);//キャタピラを回転
 
-        BaseMove.MoveSE();
+        BaseMove.MoveSE();                         //移動SE
     }
 
     protected virtual void FixedUpdate()
     {
-        Always();
+        Always();                //常に実行される関数を呼び出す
 
-        if (IsNotMove) NotMove();
-        else Move();
+        if (IsNotMove) NotMove();//移動できない状態なら/移動出来ない状態の際実行する関数を呼び出す
+        else Move();             //それ以外なら/移動出来る状態の際実行する関数を呼び出す
     }
 }

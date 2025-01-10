@@ -1,6 +1,7 @@
 using UnityEngine;
 using System.Collections;
 
+/// <summary>タンクのカラー</summary>
 public class TankFillColorScript : MonoBehaviour
 {
     /// <summary>色を変えるスプライト配列</summary>

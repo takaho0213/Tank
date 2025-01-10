@@ -44,7 +44,7 @@ public class SliderFieldScript : MonoBehaviour
 
         slider.onValueChanged.AddListener(OnValueChanged);//スライダーの値が変更された際、実行する関数を追加
 
-        slider.value = Mathf.Clamp(initValue, min, max); //スライダーの値を設定
+        slider.value = Mathf.Clamp(initValue, min, max);  //スライダーの値を設定
     }
 
     /// <summary>スライダーの値が変更された際、実行する</summary>

@@ -17,9 +17,9 @@ public class MoveText
     /// <summary>初期位置セット</summary>
     public void Init()
     {
-        Trafo = TMP.transform;
+        Trafo = TMP.transform;   //transformを代入
 
-        initPos = Trafo.position;
+        initPos = Trafo.position;//初期位置を代入
     }
 
     /// <summary>リセット</summary>

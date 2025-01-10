@@ -25,6 +25,7 @@ public class ColorFieldScript : MonoBehaviour
     /// <summary>ボタン配列</summary>
     [SerializeField] private ColorButtonScript[] buttons;
 
+    /// <summary>初期値のボタン</summary>
     [SerializeField] private ColorButtonScript initButton;
 
     /// <summary>値</summary>
@@ -34,20 +35,20 @@ public class ColorFieldScript : MonoBehaviour
     {
         fieldTMP.text = fieldName;                         //フィールド名を代入
 
-        rSlider.onValueChanged.AddListener(OnValueChanged);//スライダーの値が変更された際、実行する関数を追加
-        gSlider.onValueChanged.AddListener(OnValueChanged);
-        bSlider.onValueChanged.AddListener(OnValueChanged);
+        rSlider.onValueChanged.AddListener(OnValueChanged);//Rスライダーの値が変更された際、実行する関数を追加
+        gSlider.onValueChanged.AddListener(OnValueChanged);//Gスライダーの値が変更された際、実行する関数を追加
+        bSlider.onValueChanged.AddListener(OnValueChanged);//Bスライダーの値が変更された際、実行する関数を追加
 
         OnValueChanged(default);                           //Colorを表示するGraphicにスライダーの値をセット
 
         UnityAction<Color> c = OnClick;                    //ボタンがクリックされた際実行するする関数
 
-        foreach (var b in buttons)
+        foreach (var b in buttons)                         //ボタン配列の要素数分繰り返す
         {
             b.Init(c);                                     //ボタンを初期化
         }
 
-        initButton.OnClick();
+        initButton.OnClick();                              //初期のボタンの色に設定
     }
 
     /// <summary>Colorを表示するGraphicにスライダーの値をセット</summary>

@@ -1,7 +1,9 @@
 using UnityEngine;
 
+/// <summary>ターゲットを探す</summary>
 public class TankTargetSearchScript : MonoBehaviour
 {
+    /// <summary>ターゲットのコライダー</summary>
     [SerializeField, LightColor] private Collider2D targetColl;
 
     /// <summary>発射するレイの形</summary>
@@ -19,6 +21,7 @@ public class TankTargetSearchScript : MonoBehaviour
     /// <summary>プレイヤーのレイヤー</summary>
     [SerializeField] private LayerMask playerLayer;
 
+    /// <summary>ラインの幅</summary>
     [SerializeField] private float lineWidth;
 
     /// <summary>発射するレイの形のトランスフォーム</summary>
@@ -50,18 +53,20 @@ public class TankTargetSearchScript : MonoBehaviour
     /// <returns>ヒットしたか</returns>
     public bool Ray(Vector3 target)
     {
-        var pos = trafo.position;                         //自身の位置
+        var pos = trafo.position;                             //自身の位置
 
-        var hit = CapsuleRayCast(pos, target - pos, rayLayer);//
+        var hit = CapsuleRayCast(pos, target - pos, rayLayer);//カプセル型のレイを発射
 
-        return hit && hit.collider == targetColl;//ヒットしたか
+        return hit && hit.collider == targetColl;             //ヒットしたか
     }
 
+    /// <summary>サーチする角度を変更</summary>
+    /// <returns>角度を返す</returns>
     public Vector2 Rotate()
     {
         trafo.Rotate(angle);//回転
 
-        return trafo.up;
+        return trafo.up;    //upを返す
     }
 
     /// <summary>反射するカプセル型のRayを発射</summary>
@@ -76,6 +81,6 @@ public class TankTargetSearchScript : MonoBehaviour
 
         var ray2 = CapsuleRayCast(ray1.centroid, Vector2.Reflect(d, ray1.normal), playerLayer);//ヒットした場所からレイを発射しヒットしたか
 
-        return ray2 && ray2.collider == targetColl;                                                                           //ヒットしたら ? 一度目のレイの方向 : (0, 0)
+        return ray2 && ray2.collider == targetColl;                                            //ヒットしたら ? 一度目のレイの方向 : (0, 0)
     }
 }

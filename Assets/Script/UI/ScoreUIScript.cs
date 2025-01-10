@@ -50,7 +50,7 @@ public class ScoreUIScript : MonoBehaviour
 
     public void Start()
     {
-        scoreUnion ??= new(scoreTextInterval);                   //インスタンスを作成
+        scoreUnion ??= new(scoreTextInterval);           //インスタンスを作成
 
         scoreList = scoreIO.Load<SerializeList<float>>();//スコアリスト
     }
@@ -65,12 +65,12 @@ public class ScoreUIScript : MonoBehaviour
 
         int count = scoreList.Count - displayScoreCount;//削除数
 
-        for (int i = default; i < count; i++)               //削除数分繰り返す
+        for (int i = default; i < count; i++)           //削除数分繰り返す
         {
-            scoreList.Remove(scoreList.Last());     //最後の要素を削除
+            scoreList.Remove(scoreList.Last());         //最後の要素を削除
         }
 
-        scoreIO.Save(scoreList, true);              //スコアをセーブ
+        scoreIO.Save(scoreList, true);                  //スコアをセーブ
     }
 
     /// <summary>スコアテキストを生成</summary>
@@ -83,10 +83,10 @@ public class ScoreUIScript : MonoBehaviour
         string number = default;                                          //順位テキスト
         string time = default;                                            //タイムテキスト
 
-        for (int i = default; i < scoreList.Count; i++)               //スコアリスト分繰り返す
+        for (int i = default; i < scoreList.Count; i++)                   //スコアリスト分繰り返す
         {
             number = (i + 1).ToString();                                  //順位テキストを代入
-            time = ToScoreText(scoreList[i]);                     //タイムテキストを代入
+            time = ToScoreText(scoreList[i]);                             //タイムテキストを代入
 
             text += scoreTextR2.Replace2(number, time) + StringEx.NewLine;//表示テキストを加算代入
         }
@@ -132,12 +132,12 @@ public class ScoreUIScript : MonoBehaviour
     /// <returns>スコアを表示し終え、SEの再生か終了したら終了</returns>
     public IEnumerator Display(float time)
     {
-        ScoreListSort(time);                        //スコアリストをソートし現在のスコアを取得
+        ScoreListSort(time);                    //スコアリストをソートし現在のスコアを取得
 
         var text = ScoreText(ToScoreText(time));//スコアテキストを取得
 
-        yield return ScoreDisplay(text);            //スコアを表示
+        yield return ScoreDisplay(text);        //スコアを表示
 
-        yield return ReSetUI();                     //UIをリセット
+        yield return ReSetUI();                 //UIをリセット
     }
 }

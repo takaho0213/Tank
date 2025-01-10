@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.EventSystems;
 
+/// <summary>“ü—ÍˆÚ“®</summary>
 public class TankInputMoveScript : TankMoveScript
 {
     /// <summary>inputModule</summary>
