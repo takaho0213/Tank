@@ -3523,14 +3523,7 @@ MonoBehaviour:
   directoryName: Save
   fileName: TimeScore
   data:
-    List:
-    - -33.73027
-    - 9.001357
-    - 10.259079
-    - 11.017317
-    - 12.562285
-    - 49.427475
-    - 179.9182
+    List: []
 --- !u!1 &248104353
 GameObject:
   m_ObjectHideFlags: 0

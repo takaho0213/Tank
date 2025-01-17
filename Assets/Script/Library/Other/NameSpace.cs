@@ -6,7 +6,7 @@ using System.Linq;
 
 namespace MyEditor
 {
-#if true
+#if UNITY_EDITOR
     [InitializeOnLoad]
     internal static class HierarchyStripes
     {

@@ -4,7 +4,6 @@ using UnityEngine.UI;
 using UnityEngine.Events;
 
 /// <summary>選択ボタン</summary>
-[System.Serializable]
 public class SelectButtonScript<T> : MonoBehaviour
 {
     /// <summary>ボタン</summary>

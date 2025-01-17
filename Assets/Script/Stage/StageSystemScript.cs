@@ -41,6 +41,9 @@ public class StageSystemScript : MonoBehaviour
     /// <summary>ステージのAudio</summary>
     private AudioInfoDictionary<StageClip> stageAudio;
 
+    /// <summary>チュートリアル中か</summary>
+    public bool IsTutorial => tutorial.IsActive;
+
     /// <summary>タンクが動けない状態か</summary>
     public bool IsNotMove => title.IsRun || eyecatch.IsNotMove || isNotMove;
 

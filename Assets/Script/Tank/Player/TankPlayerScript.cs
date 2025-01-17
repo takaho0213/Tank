@@ -57,6 +57,13 @@ public class TankPlayerScript : TankScript
         fillColor.SetColor();//色をセット
     }
 
+    protected override void OnTriggerEnter2D(Collider2D hit)
+    {
+        if (stageSystem.IsTutorial) return;//チュートリアル中なら/終了
+
+        base.OnTriggerEnter2D(hit);        //ベースの関数を呼び出す
+    }
+
     protected override void Move()
     {
         line.CreateLine();                                                                     //ラインを生成

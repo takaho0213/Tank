@@ -40,16 +40,16 @@ public class EnemyInfoFieldScript : MonoBehaviour
     /// <returns>EnemyTankの情報</returns>
     public TankEnemyInfoScript SetInfo()
     {
-        var h = health.IntValue;               //体力の値
-        var m = moveType.Value;                //移動タイプの値
-        var s = moveSpeed.Value;               //移動速度の値
-        var n = isMoveVectorNormalized.Value;  //移動速度固定の値
+        var h = health.IntValue;               //体力              の値
+        var m = moveType.Value;                //移動タイプ        の値
+        var s = moveSpeed.Value;               //移動速度          の値
+        var n = isMoveVectorNormalized.Value;  //移動速度固定      の値
         var l = turretLerp.Value;              //タレットの回転速度の値
-        var a = attackType.Value;              //攻撃タイプの値
-        var i = shootInterval.Value;           //射撃間隔の値
-        var b = bulletSpeed.Value;             //弾速の値
-        var r = bulletReflectionCount.IntValue;//弾の反射数の値
-        var c = fillColor.Value;               //カラーの値
+        var a = attackType.Value;              //攻撃タイプ        の値
+        var i = shootInterval.Value;           //射撃間隔          の値
+        var b = bulletSpeed.Value;             //弾速              の値
+        var r = bulletReflectionCount.IntValue;//弾の反射数        の値
+        var c = fillColor.Value;               //カラー            の値
 
         info.Set(h, m, s, n, l, a, i, b, r, c);//情報をセット
 

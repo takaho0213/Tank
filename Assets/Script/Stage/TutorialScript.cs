@@ -23,6 +23,9 @@ public class TutorialScript : MonoBehaviour
     /// <summary>スタートした際実行する関数</summary>
     private UnityAction onStart;
 
+    /// <summary>チュートリアルがアクティブ中か</summary>
+    public bool IsActive => tutorialMenu.IsActive;
+
     /// <summary>スタートした際実行する関数をセット</summary>
     /// <param name="onStart">スタートした際実行する関数</param>
     public void SetOnStartAction(UnityAction onStart) => this.onStart = onStart;
